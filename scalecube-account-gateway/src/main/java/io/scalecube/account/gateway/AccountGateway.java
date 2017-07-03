@@ -1,12 +1,5 @@
 package io.scalecube.account.gateway;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.nio.file.Files;
-
-import org.rapidoid.setup.On;
-
 import io.scalecube.account.api.AccountService;
 import io.scalecube.gateway.APIGateway;
 import io.scalecube.services.Microservices;

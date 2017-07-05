@@ -19,7 +19,7 @@
 		<dependency>
 			<groupId>io.scalecube</groupId>
 			<artifactId>scalecube-services</artifactId>
-			<version>1.0.4-SNAPSHOT</version>
+			<version>1.0.4</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.rapidoid/rapidoid-http -->
 		<dependency>

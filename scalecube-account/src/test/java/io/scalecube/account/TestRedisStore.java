@@ -3,6 +3,8 @@ package io.scalecube.account;
 import java.util.Collection;
 import java.util.List;
 
+import org.redisson.Redisson;
+
 import io.scalecube.account.api.Organization;
 import io.scalecube.account.api.User;
 import io.scalecube.account.db.AccessPermissionException;
@@ -14,7 +16,7 @@ public class TestRedisStore extends TestCase {
   private static final String ORG_NAME = "testOrg4";
   
   public void testRedisOrganizationMembers() throws AccessPermissionException{
-    RedisOrganizations organizations = new RedisOrganizations();
+    RedisOrganizations organizations = new RedisOrganizations(Redisson.create());
     User owner = new User("id0", "email0", true, "name0", "pictureUrl0", "locale0", "familyName0", "givenName0",null);
     Organization org;
     List<Organization> resultSet = organizations.queryBy(v->v.name().equals(ORG_NAME));

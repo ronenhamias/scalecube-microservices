@@ -1,5 +1,7 @@
 package io.scalecube.account;
 
+import org.redisson.Redisson;
+
 import io.scalecube.account.api.AccountService;
 import io.scalecube.account.api.CreateOrganizationRequest;
 import io.scalecube.account.api.GetMembershipRequest;
@@ -13,7 +15,7 @@ public class TestRedisAccountService extends TestCase {
   final AccountService account;
   
   public TestRedisAccountService() throws Exception{
-    account = new RedisAccountService();
+    account = new RedisAccountService(Redisson.create());
   }
  
   public void testCreateOrganization() throws Exception {

@@ -6,14 +6,14 @@ import java.util.concurrent.ConcurrentMap;
 
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
+import org.redisson.config.Config;
 
 public class RedisStore<T> {
   
   private RedissonClient redisson;
   
-  public RedisStore() { 
-    // connects to 127.0.0.1:6379 by default
-    redisson = Redisson.create();
+  public RedisStore(RedissonClient client) {    
+    redisson = client;
   }
   
   public T putIfAbsent(String collection,String key, T doc) {

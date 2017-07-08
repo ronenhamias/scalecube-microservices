@@ -6,6 +6,9 @@ import java.net.URL;
 import java.nio.file.Files;
 
 import org.rapidoid.setup.On;
+import org.redisson.Redisson;
+import org.redisson.api.RedissonClient;
+import org.redisson.config.Config;
 
 import io.scalecube.account.RedisAccountService;
 import io.scalecube.account.db.RedisOrganizations;
@@ -17,14 +20,15 @@ import io.scalecube.services.Microservices;
 public class GatewayAll {
 
   public static void main(String[] args) {
-    
-    RedisOrganizations accountManager = new RedisOrganizations();
+    RedissonClient client = Redisson.create();
+    RedisOrganizations accountManager = new RedisOrganizations(client);
     accountManager.clearAll();
     
     Microservices seed = Microservices.builder().build();
     
-    RedisAccountService account = new RedisAccountService();
-    RedisConfigurationService configuration  = new RedisConfigurationService();
+    RedisAccountService account = new RedisAccountService(client);
+    RedisConfigurationService configuration  = new RedisConfigurationService(client);
+    
     Microservices ms = Microservices.builder()
       .services(account,configuration)
       .seeds(seed.cluster().address())

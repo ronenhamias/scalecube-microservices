@@ -5,6 +5,7 @@ import java.util.concurrent.ConcurrentMap;
 
 import io.scalecube.account.api.Token;
 import io.scalecube.account.api.User;
+import io.scalecube.account.db.RedisOrganizations;
 
 public class TokenVerification {
 
@@ -12,10 +13,10 @@ public class TokenVerification {
   private static final String DEFAULT_TOKEN_PROVIDER = "default";
   private final ConcurrentMap<String, TokenVerifier> providers = new ConcurrentHashMap<>();
   
-  public TokenVerification(){
+  public TokenVerification(RedisOrganizations organizations){
     
     providers.putIfAbsent(GOOGLE, new GoogleTokenVerification());
-    providers.putIfAbsent(DEFAULT_TOKEN_PROVIDER, new DefaultTokenVerification());
+    providers.putIfAbsent(DEFAULT_TOKEN_PROVIDER, new DefaultTokenVerification(organizations));
   
   }
   

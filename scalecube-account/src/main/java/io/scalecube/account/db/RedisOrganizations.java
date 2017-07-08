@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
+import org.redisson.config.Config;
 
 import io.scalecube.account.api.Organization;
 import io.scalecube.account.api.OrganizationMember;
@@ -24,8 +25,8 @@ public class RedisOrganizations {
 
   private final RedissonClient redisson;
 
-  public RedisOrganizations() {
-    redisson = Redisson.create();
+  public RedisOrganizations(RedissonClient redisson) {
+    this.redisson = redisson;
   }
 
   public void clearAll() {

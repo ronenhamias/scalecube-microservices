@@ -17,8 +17,11 @@ public class DefaultTokenVerification implements TokenVerifier {
 
   private ConcurrentMap<String, JWT> jwtProviders = new ConcurrentHashMap<>();
 
-  private RedisOrganizations organizations = new RedisOrganizations();
+  private final RedisOrganizations organizations ;
 
+  public DefaultTokenVerification(RedisOrganizations organizations){
+    this.organizations = organizations;
+  }
   @Override
   public User verify(Token token) throws Exception {
     String key = "account-service/" + token.origin();

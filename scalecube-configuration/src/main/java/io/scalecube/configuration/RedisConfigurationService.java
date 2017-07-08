@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
+import org.redisson.api.RedissonClient;
+
 import io.scalecube.account.api.AccountService;
 import io.scalecube.configuration.api.AccessRequest;
 import io.scalecube.configuration.api.Acknowledgment;
@@ -21,15 +23,19 @@ import io.scalecube.services.annotations.ServiceProxy;
 
 public class RedisConfigurationService implements ConfigurationService {
 
+  @ServiceProxy
+  private AccountService accountService;
+
+  private final RedisStore<Document> store;
+  
+  public RedisConfigurationService(RedissonClient client){
+    store = new RedisStore<Document>(client);
+  }
+  private static final String PERMISSIONS_LEVEL = "permissions-level";
+
   private enum Permissions {
     read, write
   }
-
-
-  private final RedisStore<Document> store = new RedisStore<Document>();
-
-  @ServiceProxy
-  private AccountService accountService;
 
   public CompletableFuture<FetchResponse> fetch(final FetchRequest request) {
     final CompletableFuture<FetchResponse> future = new CompletableFuture<>();
@@ -122,8 +128,8 @@ public class RedisConfigurationService implements ConfigurationService {
   }
 
   private Permissions getPermissions(Map<String, String> claims) {
-    if (claims != null && claims.containsKey("permissions-level")) {
-      return Permissions.valueOf(claims.get("permissions-level"));
+    if (claims != null && claims.containsKey(PERMISSIONS_LEVEL)) {
+      return Permissions.valueOf(claims.get(PERMISSIONS_LEVEL));
     }
     return Permissions.read;
   }

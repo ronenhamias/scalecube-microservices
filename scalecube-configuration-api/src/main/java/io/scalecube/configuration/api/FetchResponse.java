@@ -1,8 +1,6 @@
 package io.scalecube.configuration.api;
 
 public class FetchResponse {
-  
-  
 
   public static class Builder {
 
@@ -13,14 +11,14 @@ public class FetchResponse {
     public FetchResponse build() {
       return new FetchResponse(this.key, this.value);
     }
-    
+
     public Builder value(Object value) {
       this.value = value;
       return this;
     }
 
     public Builder key(String key) {
-      this.key=key;
+      this.key = key;
       return this;
     }
 
@@ -29,13 +27,13 @@ public class FetchResponse {
   private Object value;
 
   private String key;
-  
+
   public FetchResponse(String key, Object value) {
     this.value = value;
-    this.key=key;
+    this.key = key;
   }
 
-  public static  Builder builder() {
+  public static Builder builder() {
     return new Builder();
   }
 
@@ -43,7 +41,7 @@ public class FetchResponse {
     return this.value;
   }
 
-  
+
   @Override
   public String toString() {
     return "FetchResponse [value=" + value + ", key=" + key + "]";

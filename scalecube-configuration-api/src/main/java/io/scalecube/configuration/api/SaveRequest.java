@@ -10,23 +10,23 @@ public class SaveRequest implements AccessRequest {
   private String collection;
   private String key;
   private JsonNode value;
-  
-  public SaveRequest(){};
-  
+
+  public SaveRequest() {}
+
   public SaveRequest(String collection, String key, JsonNode value) {
     this.collection = collection;
-    this.key=key;
+    this.key = key;
     this.value = value;
   }
 
   public Token token() {
     return this.token;
   }
-  
+
   public JsonNode value() {
     return this.value;
   }
-  
+
   public String key() {
     return this.key;
   }

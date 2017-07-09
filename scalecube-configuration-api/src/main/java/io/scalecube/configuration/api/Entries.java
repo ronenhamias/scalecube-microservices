@@ -5,10 +5,10 @@ public class Entries<T> {
   private T[] entries;
 
   public Entries(T[] array) {
-    this.entries=array;
+    this.entries = array;
   }
 
-  public T[] entries(){
+  public T[] entries() {
     return this.entries;
   }
 }

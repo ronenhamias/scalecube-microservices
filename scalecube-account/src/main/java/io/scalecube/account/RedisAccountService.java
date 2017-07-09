@@ -2,17 +2,6 @@ package io.scalecube.account;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
-
-import org.redisson.api.RedissonClient;
-
-import com.google.common.collect.Lists;
-
 import io.scalecube.account.api.AccountService;
 import io.scalecube.account.api.AddOrganizationApiKeyRequest;
 import io.scalecube.account.api.ApiKey;
@@ -52,11 +41,22 @@ import io.scalecube.account.tokens.IdGenerator;
 import io.scalecube.account.tokens.JwtApiKey;
 import io.scalecube.account.tokens.TokenVerification;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
+
+import org.redisson.api.RedissonClient;
+
+import com.google.common.collect.Lists;
+
 public class RedisAccountService implements AccountService {
 
   private final RedisOrganizations accountManager;
 
-  private final TokenVerification tokenVerifier ;
+  private final TokenVerification tokenVerifier;
 
   public RedisAccountService(RedissonClient redisson) {
     accountManager = new RedisOrganizations(redisson);

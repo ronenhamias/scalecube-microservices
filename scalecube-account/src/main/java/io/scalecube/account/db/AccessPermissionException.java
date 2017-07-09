@@ -7,5 +7,5 @@ public class AccessPermissionException extends Exception {
   public AccessPermissionException(String message) {
     super(message);
   }
-  
+
 }

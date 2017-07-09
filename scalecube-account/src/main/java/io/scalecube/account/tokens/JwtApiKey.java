@@ -5,17 +5,17 @@ import java.util.Map;
 import io.scalecube.account.api.ApiKey;
 import io.scalecube.jwt.JWT;
 
-public class JwtApiKey extends ApiKey{
-  
-  public JwtApiKey(){}
-  
+public class JwtApiKey extends ApiKey {
+
+  public JwtApiKey() {}
+
   public JwtApiKey(String name, Map<String, String> claims, String apiKey) {
     super.name = name;
     super.claims = claims;
     super.key = apiKey;
   }
 
-  public static final class Builder{
+  public static final class Builder {
 
     private String origin;
     private String subject;
@@ -27,7 +27,7 @@ public class JwtApiKey extends ApiKey{
       this.name = name;
       return this;
     }
-    
+
     public Builder origin(String origin) {
       this.origin = origin;
       return this;
@@ -37,7 +37,7 @@ public class JwtApiKey extends ApiKey{
       this.id = id;
       return this;
     }
-    
+
     public Builder subject(String subject) {
       this.subject = subject;
       return this;
@@ -50,14 +50,14 @@ public class JwtApiKey extends ApiKey{
 
     public ApiKey build(String secretKey) {
       final JWT jwt = new JWT(this.origin, this.subject);
-      final String apiKey = jwt.createToken(this.id, Long.MAX_VALUE - System.currentTimeMillis(), secretKey,claims);
-      return new JwtApiKey(this.name,this.claims,apiKey);
+      final String apiKey = jwt.createToken(this.id, Long.MAX_VALUE - System.currentTimeMillis(), secretKey, claims);
+      return new JwtApiKey(this.name, this.claims, apiKey);
     }
-    
+
   }
-  
+
   public static Builder builder() {
     return new Builder();
   }
-  
+
 }

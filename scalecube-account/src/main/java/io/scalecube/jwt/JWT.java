@@ -24,11 +24,11 @@ public class JWT {
     this.subject = subject;
   }
 
-  public String createToken(String id, long ttlMillis, String secretKey, Map<String,String> claims) {
-    if(claims==null) {
+  public String createToken(String id, long ttlMillis, String secretKey, Map<String, String> claims) {
+    if (claims == null) {
       claims = new HashMap<>();
     }
-    return createJWT(id, issuer, subject, ttlMillis, secretKey,claims);
+    return createJWT(id, issuer, subject, ttlMillis, secretKey, claims);
   }
 
   /**
@@ -40,7 +40,8 @@ public class JWT {
    * @param ttlMillis contains ttl information
    * @return returns string if valid
    */
-  private String createJWT(String id, String issuer, String subject, long ttlMillis, String secretKey, Map<String,String> claims) {
+  private String createJWT(String id, String issuer, String subject, long ttlMillis, String secretKey,
+      Map<String, String> claims) {
 
     // The JWT signature algorithm we will be using to sign the token
     SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
@@ -59,8 +60,8 @@ public class JWT {
         .setIssuedAt(now)
         .setSubject(subject).setIssuer(issuer)
         .signWith(signatureAlgorithm, signingKey);
-    
-    for(Map.Entry<String, String> entry : claims.entrySet()){
+
+    for (Map.Entry<String, String> entry : claims.entrySet()) {
       builder.claim(entry.getKey(), entry.getValue());
     }
     // if it has been specified, let's add the expiration
@@ -68,7 +69,7 @@ public class JWT {
       long expMillis = nowMillis + ttlMillis;
       Date exp = new Date(expMillis);
       builder.setExpiration(exp);
-    } else{
+    } else {
       builder.setExpiration(null);
     }
 
@@ -92,7 +93,7 @@ public class JWT {
       // Make sure expiration is in the future
       long nowMillis = System.currentTimeMillis();
       Date now = new Date(nowMillis);
-      if (claims.getExpiration()!=null && claims.getExpiration().after(now)) {
+      if (claims.getExpiration() != null && claims.getExpiration().after(now)) {
         return true;
       }
     }
@@ -112,8 +113,8 @@ public class JWT {
       claims = (Claims) Jwts.parser()
           .setSigningKey(DatatypeConverter
               .parseBase64Binary(secretKey))
-              .parseClaimsJws(jwt)
-              .getBody();
+          .parseClaimsJws(jwt)
+          .getBody();
     } catch (Exception ex) {
       System.out.println(ex.getMessage());
     }

@@ -17,11 +17,12 @@ public class DefaultTokenVerification implements TokenVerifier {
 
   private ConcurrentMap<String, JWT> jwtProviders = new ConcurrentHashMap<>();
 
-  private final RedisOrganizations organizations ;
+  private final RedisOrganizations organizations;
 
-  public DefaultTokenVerification(RedisOrganizations organizations){
+  public DefaultTokenVerification(RedisOrganizations organizations) {
     this.organizations = organizations;
   }
+
   @Override
   public User verify(Token token) throws Exception {
     String key = "account-service/" + token.origin();
@@ -30,12 +31,12 @@ public class DefaultTokenVerification implements TokenVerifier {
     if (org != null) {
       JWT jwt = jwtProviders.computeIfAbsent(key, j -> new JWT("account-service", org.id()));
       Claims claims = jwt.parse(token.token(), org.secretKey());
-      Map<String,String> claimsMap = new HashMap<String,String>();
-      for(Entry<String, Object> entry : claims.entrySet()){
+      Map<String, String> claimsMap = new HashMap<String, String>();
+      for (Entry<String, Object> entry : claims.entrySet()) {
         claimsMap.put(entry.getKey(), entry.getValue().toString());
       }
       if (claims != null) {
-        return new User(org.id(), org.email(), true, org.name(), null, null, null, null,claimsMap);
+        return new User(org.id(), org.email(), true, org.name(), null, null, null, null, claimsMap);
       }
     }
     return null;

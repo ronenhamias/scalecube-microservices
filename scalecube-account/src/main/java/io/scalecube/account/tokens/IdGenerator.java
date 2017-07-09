@@ -1,4 +1,5 @@
 package io.scalecube.account.tokens;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Random;

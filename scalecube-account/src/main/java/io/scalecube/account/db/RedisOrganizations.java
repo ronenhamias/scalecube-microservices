@@ -48,10 +48,11 @@ public class RedisOrganizations {
   public Organization createOrganization(User owner, Organization organization) throws AccessPermissionException {
     ConcurrentMap<String, Organization> organizations = redisson.getMap(ORGANIZATIONS_BY_ID);
     organizations.putIfAbsent(organization.id(), organization);
-    
-    final ConcurrentMap<String, OrganizationMember> members = redisson.getMap(organizationMembersCollection(organization.id()));
+
+    final ConcurrentMap<String, OrganizationMember> members =
+        redisson.getMap(organizationMembersCollection(organization.id()));
     members.putIfAbsent(owner.id(), new OrganizationMember(owner, "owner"));
-    
+
     return organization;
   }
 
@@ -149,12 +150,12 @@ public class RedisOrganizations {
         }).collect(Collectors.toList()));
 
   }
-  
-  
+
+
   private String organizationMembersCollection(String organizationId) {
     return organizationId + "@" + ORGANIZATION_MEMBERS;
   }
-  
+
   private boolean isOwner(Organization organization, User user) {
     return getOwners(organization).stream().filter(u -> u.id().equals(user.id())).count() > 0;
   }

@@ -1,5 +1,7 @@
 package io.scalecube.gateway;
 
+import io.scalecube.services.annotations.ServiceMethod;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -15,8 +17,6 @@ import org.rapidoid.setup.On;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import io.scalecube.services.annotations.ServiceMethod;
 
 public class APIGateway {
 

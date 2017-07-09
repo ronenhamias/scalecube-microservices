@@ -1,9 +1,5 @@
 package io.scalecube.configuration.api;
 
-import java.util.Arrays;
-import java.util.Map;
-
-
 public class FetchResponse {
   
   

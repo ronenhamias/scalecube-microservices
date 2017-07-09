@@ -1,9 +1,9 @@
 package io.scalecube.configuration.seed;
 
-import org.redisson.Redisson;
-
 import io.scalecube.configuration.RedisConfigurationService;
 import io.scalecube.services.Microservices;
+
+import org.redisson.Redisson;
 
 public class ConfigurationBootstrap {
 

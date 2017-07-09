@@ -1,5 +1,8 @@
 package io.scalecube.account.tokens;
 
+import io.scalecube.account.api.Token;
+import io.scalecube.account.api.User;
+
 import java.util.Collections;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
@@ -8,9 +11,6 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
-
-import io.scalecube.account.api.Token;
-import io.scalecube.account.api.User;
 
 public class GoogleTokenVerification implements TokenVerifier {
 

@@ -1,9 +1,9 @@
 package io.scalecube.account.tokens;
 
-import java.util.Map;
-
 import io.scalecube.account.api.ApiKey;
 import io.scalecube.jwt.JWT;
+
+import java.util.Map;
 
 public class JwtApiKey extends ApiKey {
 

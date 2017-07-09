@@ -1,10 +1,10 @@
 package io.scalecube.account.seed;
 
-import org.redisson.Redisson;
-
 import io.scalecube.account.RedisAccountService;
 import io.scalecube.services.Microservices;
 import io.scalecube.transport.Address;
+
+import org.redisson.Redisson;
 
 public class AccountBootstrap {
 

@@ -1,8 +1,8 @@
 package io.scalecube.configuration.api;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
 import io.scalecube.account.api.Token;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 public class SaveRequest implements AccessRequest {
 

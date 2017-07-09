@@ -1,13 +1,5 @@
 package io.scalecube.configuration;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
-
-import org.redisson.api.RedissonClient;
-
 import io.scalecube.account.api.AccountService;
 import io.scalecube.configuration.api.AccessRequest;
 import io.scalecube.configuration.api.Acknowledgment;
@@ -20,6 +12,14 @@ import io.scalecube.configuration.api.InvalidPermissionsException;
 import io.scalecube.configuration.api.SaveRequest;
 import io.scalecube.configuration.db.RedisStore;
 import io.scalecube.services.annotations.ServiceProxy;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
+
+import org.redisson.api.RedissonClient;
 
 public class RedisConfigurationService implements ConfigurationService {
 

@@ -1,5 +1,12 @@
 package io.scalecube.gateway.all;
 
+import io.scalecube.account.RedisAccountService;
+import io.scalecube.account.db.RedisOrganizations;
+import io.scalecube.account.gateway.AccountGateway;
+import io.scalecube.configuration.RedisConfigurationService;
+import io.scalecube.configuration.gateway.ConfigurationGateway;
+import io.scalecube.services.Microservices;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -8,14 +15,6 @@ import java.nio.file.Files;
 import org.rapidoid.setup.On;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
-import org.redisson.config.Config;
-
-import io.scalecube.account.RedisAccountService;
-import io.scalecube.account.db.RedisOrganizations;
-import io.scalecube.account.gateway.AccountGateway;
-import io.scalecube.configuration.RedisConfigurationService;
-import io.scalecube.configuration.gateway.ConfigurationGateway;
-import io.scalecube.services.Microservices;
 
 public class GatewayAll {
 

@@ -1,9 +1,9 @@
 package io.scalecube.configuration.api;
 
-import java.util.concurrent.CompletableFuture;
-
 import io.scalecube.services.annotations.Service;
 import io.scalecube.services.annotations.ServiceMethod;
+
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Configuration services manages Key / value json objects store. clients of the configuration service may save fetch

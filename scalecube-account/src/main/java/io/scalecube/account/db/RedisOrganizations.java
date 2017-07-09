@@ -1,5 +1,9 @@
 package io.scalecube.account.db;
 
+import io.scalecube.account.api.Organization;
+import io.scalecube.account.api.OrganizationMember;
+import io.scalecube.account.api.User;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -9,13 +13,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
-import org.redisson.config.Config;
-
-import io.scalecube.account.api.Organization;
-import io.scalecube.account.api.OrganizationMember;
-import io.scalecube.account.api.User;
 
 public class RedisOrganizations {
 

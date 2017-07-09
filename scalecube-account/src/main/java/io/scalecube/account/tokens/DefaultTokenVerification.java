@@ -1,5 +1,11 @@
 package io.scalecube.account.tokens;
 
+import io.scalecube.account.api.Organization;
+import io.scalecube.account.api.Token;
+import io.scalecube.account.api.User;
+import io.scalecube.account.db.RedisOrganizations;
+import io.scalecube.jwt.JWT;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -7,11 +13,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import io.jsonwebtoken.Claims;
-import io.scalecube.account.api.Organization;
-import io.scalecube.account.api.Token;
-import io.scalecube.account.api.User;
-import io.scalecube.account.db.RedisOrganizations;
-import io.scalecube.jwt.JWT;
 
 public class DefaultTokenVerification implements TokenVerifier {
 

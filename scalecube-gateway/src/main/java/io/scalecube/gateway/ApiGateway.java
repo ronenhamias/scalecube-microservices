@@ -18,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
-public class APIGateway {
+public class ApiGateway {
 
   private static ObjectMapper mapper = new ObjectMapper();
 
@@ -30,7 +30,7 @@ public class APIGateway {
         .withCreatorVisibility(Visibility.NONE));
   }
 
-  static final public class RouteInfo {
+  public static final class RouteInfo {
 
     private Builder builder;
     private String action;
@@ -42,33 +42,39 @@ public class APIGateway {
       this.url = url;
     }
 
+    /**
+     * Builder mapping http request to target service method name.
+     * 
+     * @param methodName to direct the http request to.
+     * @return this builder.
+     */
     public Builder to(String methodName) {
       On.port(builder.port).route(this.action, this.url).plain(req -> {
         req.async();
-     
-        Method m = builder.serviceMethods.get(methodName);
-        Class<?> requestType =null;
-        if (m.getParameterCount() > 0) {
-          requestType = m.getParameterTypes()[0];
+
+        Method method = builder.serviceMethods.get(methodName);
+        Class<?> requestType = null;
+        if (method.getParameterCount() > 0) {
+          requestType = method.getParameterTypes()[0];
         }
-        
+
         Object request = mapper.readValue(req.body(), requestType);
-        Object result = m.invoke(builder.serviceInstance, request);
-        
-        if(result!=null && result instanceof CompletableFuture){
+        Object result = method.invoke(builder.serviceInstance, request);
+
+        if (result != null && result instanceof CompletableFuture) {
           CompletableFuture<?> future = (CompletableFuture<?>) result;
-          future.whenComplete((success,error)->{
+          future.whenComplete((success, error) -> {
             try {
               IO.write(req.response().out(), mapper.writeValueAsBytes(success));
               req.done();
             } catch (JsonProcessingException e) {
-              IO.write(req.response().out(), "{\"message\":\""+e.getMessage()+"\"}");
+              IO.write(req.response().out(), "{\"message\":\"" + e.getMessage() + "\"}");
               req.done();
             }
           });
         }
-      
-        
+
+
         return req;
 
       });
@@ -79,23 +85,27 @@ public class APIGateway {
 
   }
 
-  static final public class Builder {
+  public static final class Builder {
 
     private ConcurrentMap<String, Method> serviceMethods = new ConcurrentHashMap<>();
 
     private Object serviceInstance;
-    
+
     private Object api;
 
     private int port;
 
     public Builder port(int port) {
-
-
       this.port = port;
       return this;
     }
 
+    /**
+     * Builder of the Gateway.
+     * 
+     * @param serviceApi to route requests to.
+     * @return Builder.
+     */
     public Builder api(Class serviceApi) {
       this.api = serviceApi;
       getMethodsAnnotatedWith(serviceApi, ServiceMethod.class).stream()
@@ -113,7 +123,6 @@ public class APIGateway {
     public RouteInfo route(String action, String url) {
       return new RouteInfo(this, action, url);
     }
-
   }
 
   public static Builder builder() {
@@ -127,8 +136,5 @@ public class APIGateway {
     return methods.stream()
         .filter(m -> m.isAnnotationPresent(annotation))
         .collect(Collectors.toList());
-
   }
-
-  
 }

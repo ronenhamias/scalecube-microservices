@@ -1,7 +1,7 @@
 package io.scalecube.account.gateway;
 
 import io.scalecube.account.api.AccountService;
-import io.scalecube.gateway.APIGateway;
+import io.scalecube.gateway.ApiGateway;
 import io.scalecube.services.Microservices;
 import io.scalecube.transport.Address;
 
@@ -24,7 +24,7 @@ public class AccountGateway {
   public static void start(int port, Microservices seed) {
     AccountService accountService = seed.proxy().api(AccountService.class).create();
 
-    APIGateway.builder().port(port)
+    ApiGateway.builder().port(port)
         .instance(accountService).api(AccountService.class)
         .route("POST", "/account/users/register").to("register")
         .route("POST", "/account/users/search").to("searchUser")

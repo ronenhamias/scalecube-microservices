@@ -1,7 +1,7 @@
 package io.scalecube.configuration.gateway;
 
 import io.scalecube.configuration.api.ConfigurationService;
-import io.scalecube.gateway.APIGateway;
+import io.scalecube.gateway.ApiGateway;
 import io.scalecube.services.Microservices;
 import io.scalecube.transport.Address;
 
@@ -21,7 +21,7 @@ public class ConfigurationGateway {
 
   public static void start(int port, Microservices seed) {
     ConfigurationService service = seed.proxy().api(ConfigurationService.class).create();
-    APIGateway.builder().port(8081)
+    ApiGateway.builder().port(8081)
         .instance(service).api(ConfigurationService.class)
         .route("POST", "/configuration/save").to("save")
         .route("POST", "/configuration/entries").to("entries")

@@ -6,13 +6,13 @@ import io.scalecube.account.api.User;
 import io.scalecube.account.db.RedisOrganizations;
 import io.scalecube.jwt.JWT;
 
+import io.jsonwebtoken.Claims;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-
-import io.jsonwebtoken.Claims;
 
 public class DefaultTokenVerification implements TokenVerifier {
 

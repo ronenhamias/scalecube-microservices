@@ -41,16 +41,16 @@ import io.scalecube.account.tokens.IdGenerator;
 import io.scalecube.account.tokens.JwtApiKey;
 import io.scalecube.account.tokens.TokenVerification;
 
+import com.google.common.collect.Lists;
+
+import org.redisson.api.RedissonClient;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
-
-import org.redisson.api.RedissonClient;
-
-import com.google.common.collect.Lists;
 
 public class RedisAccountService implements AccountService {
 

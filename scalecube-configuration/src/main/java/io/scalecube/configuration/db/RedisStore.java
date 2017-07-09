@@ -1,9 +1,9 @@
 package io.scalecube.configuration.db;
 
+import org.redisson.api.RedissonClient;
+
 import java.util.Collection;
 import java.util.concurrent.ConcurrentMap;
-
-import org.redisson.api.RedissonClient;
 
 public class RedisStore<T> {
   

@@ -5,10 +5,10 @@ import io.scalecube.account.api.User;
 import io.scalecube.account.db.AccessPermissionException;
 import io.scalecube.account.db.RedisOrganizations;
 
+import org.redisson.Redisson;
+
 import java.util.Collection;
 import java.util.List;
-
-import org.redisson.Redisson;
 
 import junit.framework.TestCase;
 

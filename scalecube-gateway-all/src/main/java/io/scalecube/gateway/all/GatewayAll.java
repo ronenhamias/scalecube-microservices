@@ -7,14 +7,14 @@ import io.scalecube.configuration.RedisConfigurationService;
 import io.scalecube.configuration.gateway.ConfigurationGateway;
 import io.scalecube.services.Microservices;
 
+import org.rapidoid.setup.On;
+import org.redisson.Redisson;
+import org.redisson.api.RedissonClient;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
-
-import org.rapidoid.setup.On;
-import org.redisson.Redisson;
-import org.redisson.api.RedissonClient;
 
 public class GatewayAll {
 

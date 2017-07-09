@@ -43,7 +43,7 @@ public final class IdGenerator {
     return generateId(length, ThreadLocalRandom.current());
   }
 
-  public static String generateId(int length, Random random) {
+  private static String generateId(int length, Random random) {
     byte[] buffer = new byte[length];
 
     int resultLenCounter = 0;

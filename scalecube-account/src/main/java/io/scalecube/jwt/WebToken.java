@@ -14,12 +14,12 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
 
 
-public class JWT {
+public class WebToken {
 
   private final String issuer;
   private final String subject;
 
-  public JWT(String issuer, String subject) {
+  public WebToken(String issuer, String subject) {
     this.issuer = issuer;
     this.subject = subject;
   }
@@ -28,19 +28,19 @@ public class JWT {
     if (claims == null) {
       claims = new HashMap<>();
     }
-    return createJWT(id, issuer, subject, ttlMillis, secretKey, claims);
+    return createWebToken(id, issuer, subject, ttlMillis, secretKey, claims);
   }
 
   /**
-   * Create JWT object
+   * Create JWT object.
    * 
-   * @param id contains id information
-   * @param issuer contains issuer information
-   * @param subject contains subject information
-   * @param ttlMillis contains ttl information
-   * @return returns string if valid
+   * @param id contains id information.
+   * @param issuer contains issuer information.
+   * @param subject contains subject information.
+   * @param ttlMillis contains ttl information.
+   * @return returns string if valid.
    */
-  private String createJWT(String id, String issuer, String subject, long ttlMillis, String secretKey,
+  private String createWebToken(String id, String issuer, String subject, long ttlMillis, String secretKey,
       Map<String, String> claims) {
 
     // The JWT signature algorithm we will be using to sign the token
@@ -78,14 +78,15 @@ public class JWT {
   }
 
   /**
-   * Verifies if token is valid
+   * Verifies if token is valid.
    * 
-   * @param id contains id information
-   * @param jwt contains jwt information
-   * @return return if valid
+   * @param token to validate.
+   * @param id of the token.
+   * @param secretKey this token was encypted with.
+   * @return return if valid.
    */
   public boolean isValidToken(String token, String id, String secretKey) {
-    Claims claims = parseJWT(token, secretKey);
+    Claims claims = parseWebToken(token, secretKey);
 
     // Make sure id, subject, and issuer are correct
     if (claims != null
@@ -101,12 +102,12 @@ public class JWT {
   }
 
   /**
-   * Parse JWT object
+   * Parse Web Token object.
    * 
-   * @param jwt contains jwt information
-   * @return returns if valid
+   * @param jwt contains jwt information.
+   * @return returns if valid.
    */
-  private Claims parseJWT(String jwt, String secretKey) {
+  private Claims parseWebToken(String jwt, String secretKey) {
     Claims claims = null;
     try {
       // This line will throw an exception if it is not a signed JWS (as expected)
@@ -122,7 +123,7 @@ public class JWT {
   }
 
   public Claims parse(String token, String secretKey) {
-    return parseJWT(token, secretKey);
+    return parseWebToken(token, secretKey);
   }
 
 }

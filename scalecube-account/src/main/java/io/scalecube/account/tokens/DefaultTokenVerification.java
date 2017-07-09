@@ -4,7 +4,7 @@ import io.scalecube.account.api.Organization;
 import io.scalecube.account.api.Token;
 import io.scalecube.account.api.User;
 import io.scalecube.account.db.RedisOrganizations;
-import io.scalecube.jwt.JWT;
+import io.scalecube.jwt.WebToken;
 
 import io.jsonwebtoken.Claims;
 
@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentMap;
 
 public class DefaultTokenVerification implements TokenVerifier {
 
-  private ConcurrentMap<String, JWT> jwtProviders = new ConcurrentHashMap<>();
+  private ConcurrentMap<String, WebToken> jwtProviders = new ConcurrentHashMap<>();
 
   private final RedisOrganizations organizations;
 
@@ -30,7 +30,7 @@ public class DefaultTokenVerification implements TokenVerifier {
     Organization org = organizations.getOrganization(token.origin());
 
     if (org != null) {
-      JWT jwt = jwtProviders.computeIfAbsent(key, j -> new JWT("account-service", org.id()));
+      WebToken jwt = jwtProviders.computeIfAbsent(key, j -> new WebToken("account-service", org.id()));
       Claims claims = jwt.parse(token.token(), org.secretKey());
       Map<String, String> claimsMap = new HashMap<String, String>();
       for (Entry<String, Object> entry : claims.entrySet()) {

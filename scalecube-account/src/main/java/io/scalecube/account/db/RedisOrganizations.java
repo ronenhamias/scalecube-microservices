@@ -43,6 +43,14 @@ public class RedisOrganizations {
     return users.get(userId);
   }
 
+  /**
+   * create new organization owned by the creator user.
+   * 
+   * @param owner of the organization.
+   * @param organization newly created organization.
+   * @return organization newly created organization
+   * @throws AccessPermissionException if user has not permissions.
+   */
   public Organization createOrganization(User owner, Organization organization) throws AccessPermissionException {
     ConcurrentMap<String, Organization> organizations = redisson.getMap(ORGANIZATIONS_BY_ID);
     organizations.putIfAbsent(organization.id(), organization);
@@ -54,11 +62,23 @@ public class RedisOrganizations {
     return organization;
   }
 
+  /**
+   * get Organization by a given organization id.
+   * 
+   * @param id of the requested organization.
+   * @return Organization instance.
+   */
   public Organization getOrganization(String id) {
     ConcurrentMap<String, Organization> organizations = redisson.getMap(ORGANIZATIONS_BY_ID);
     return (Organization) organizations.get(id);
   }
 
+  /**
+   * delete Organization from the store.
+   * 
+   * @param owner of the requesting user to delete.
+   * @param org to delete.
+   */
   public void deleteOrganization(User owner, Organization org) {
     if (owner.id().equals(org.ownerId())) {
       if (getOrganizationMembers(org.id()).size() == 1 && getOrganizationMembers(org.id()).contains(owner)) {
@@ -68,6 +88,12 @@ public class RedisOrganizations {
     }
   }
 
+  /**
+   * returns the Organization a specific user is member in.
+   * 
+   * @param user in subject.
+   * @return the organizations this user is memeber in.
+   */
   public Collection<Organization> getUserMembership(final User user) {
     ConcurrentMap<String, Organization> organizations = redisson.getMap(ORGANIZATIONS_BY_ID);
     return Collections.unmodifiableCollection(organizations.values().stream()
@@ -75,6 +101,12 @@ public class RedisOrganizations {
         .collect(Collectors.toList()));
   }
 
+  /**
+   * Query organizations with specific predicate.
+   * 
+   * @param predicate to query by.
+   * @return organizations match the predicate.
+   */
   public List<Organization> queryBy(Predicate<? super Organization> predicate) {
     ConcurrentMap<String, Organization> organizations = redisson.getMap(ORGANIZATIONS_BY_ID);
     if (!organizations.isEmpty()) {
@@ -88,6 +120,13 @@ public class RedisOrganizations {
 
   }
 
+  /**
+   * update organizations details.
+   * 
+   * @param owner requesting to update.
+   * @param org to be updated.
+   * @param newDetails to update with.
+   */
   public void updateOrganizationDetails(User owner, Organization org, Organization newDetails) {
     if (org.id().equals(newDetails.id())) {
       ConcurrentMap<String, Organization> organizations = redisson.getMap(ORGANIZATIONS_BY_ID);
@@ -95,6 +134,12 @@ public class RedisOrganizations {
     }
   }
 
+  /**
+   * Returns list of organizations members by a given organization id.
+   * 
+   * @param organizationId in question.
+   * @return collection of the organization members of the given organization id.
+   */
   public Collection<OrganizationMember> getOrganizationMembers(String organizationId) {
     final ConcurrentMap<String, OrganizationMember> members =
         redisson.getMap(organizationMembersCollection(organizationId));
@@ -102,6 +147,14 @@ public class RedisOrganizations {
   }
 
 
+  /**
+   * invite a user to the organization.
+   * 
+   * @param owner requesting to invite.
+   * @param organization to invite the user to.
+   * @param user to be invited
+   * @throws AccessPermissionException in case owner has not rights to invite.
+   */
   public void invite(User owner, Organization organization, final User user) throws AccessPermissionException {
     if (isOwner(organization, owner)) {
       final ConcurrentMap<String, OrganizationMember> members =
@@ -118,18 +171,37 @@ public class RedisOrganizations {
     }
   }
 
+  /**
+   * leave organization.
+   * 
+   * @param organization to leave.
+   * @param user requesting to leave.
+   */
   public void leave(Organization organization, User user) {
     final ConcurrentMap<String, OrganizationMember> members =
         redisson.getMap(organizationMembersCollection(organization.id()));
     members.remove(user.id());
   }
 
+  /**
+   * Kickout user from the organization.
+   * 
+   * @param owner of the organization that will do the kickout.
+   * @param org to kickout the user from.
+   * @param member to kickout.
+   */
   public void kickout(User owner, Organization org, User member) {
     if (isOwner(org, owner) && isOrganizationMember(member, org)) {
       leave(org, member);
     }
   }
 
+  /**
+   * return the user list that are owners for the organization.
+   * 
+   * @param organization in question.
+   * @return list of onwers.
+   */
   public List<User> getOwners(Organization organization) {
     final ConcurrentMap<String, OrganizationMember> members =
         redisson.getMap(organizationMembersCollection(organization.id()));
@@ -140,6 +212,12 @@ public class RedisOrganizations {
         .collect(Collectors.toList()));
   }
 
+  /**
+   * search user by username or email.
+   * 
+   * @param fullNameOrEmail username or email to search by.
+   * @return list of users matching the search criteria.
+   */
   public List<User> searchUserByUserNameOrEmail(String fullNameOrEmail) {
     ConcurrentMap<String, User> users = redisson.getMap(USERS);
     return Collections.unmodifiableList(
@@ -148,7 +226,6 @@ public class RedisOrganizations {
         }).collect(Collectors.toList()));
 
   }
-
 
   private String organizationMembersCollection(String organizationId) {
     return organizationId + "@" + ORGANIZATION_MEMBERS;

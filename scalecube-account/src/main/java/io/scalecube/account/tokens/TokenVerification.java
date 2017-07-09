@@ -20,10 +20,17 @@ public class TokenVerification {
 
   }
 
+  /**
+   * verify user token.
+   * 
+   * @param token to be verified.
+   * @return User if token is verified or null in case its invalid token.
+   * @throws Exception in case of parsing error.
+   */
   public User verify(Token token) throws Exception {
-    if (providers.containsKey(token.origin()))
+    if (providers.containsKey(token.origin())) {
       return providers.get(token.origin()).verify(token);
-    else {
+    } else {
       return providers.get(DEFAULT_TOKEN_PROVIDER).verify(token);
     }
   }

@@ -22,6 +22,7 @@ public class GoogleTokenVerification implements TokenVerifier {
       .setAudience(Collections.singletonList(CLIENT_ID))
       .build();
 
+  @Override
   public User verify(Token token) throws Exception {
     // google profile
     final GoogleIdToken idToken = verifier.verify(token.token());

@@ -1,7 +1,7 @@
 package io.scalecube.account.tokens;
 
 import io.scalecube.account.api.ApiKey;
-import io.scalecube.jwt.JWT;
+import io.scalecube.jwt.WebToken;
 
 import java.util.Map;
 
@@ -49,7 +49,7 @@ public class JwtApiKey extends ApiKey {
     }
 
     public ApiKey build(String secretKey) {
-      final JWT jwt = new JWT(this.origin, this.subject);
+      final WebToken jwt = new WebToken(this.origin, this.subject);
       final String apiKey = jwt.createToken(this.id, Long.MAX_VALUE - System.currentTimeMillis(), secretKey, claims);
       return new JwtApiKey(this.name, this.claims, apiKey);
     }

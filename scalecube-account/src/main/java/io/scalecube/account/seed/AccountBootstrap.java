@@ -8,6 +8,11 @@ import org.redisson.Redisson;
 
 public class AccountBootstrap {
 
+  /**
+   * AccountBootstrap main.
+   * 
+   * @param args appication params.
+   */
   public static void main(String[] args) {
 
     final Microservices node = Microservices.builder()

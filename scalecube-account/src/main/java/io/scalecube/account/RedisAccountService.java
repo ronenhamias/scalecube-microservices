@@ -58,11 +58,13 @@ public class RedisAccountService implements AccountService {
 
   private final TokenVerification tokenVerifier;
 
+  
   public RedisAccountService(RedissonClient redisson) {
     accountManager = new RedisOrganizations(redisson);
     tokenVerifier = new TokenVerification(accountManager);
   }
 
+  @Override
   public CompletableFuture<User> register(final Token token) {
     CompletableFuture<User> future = new CompletableFuture<>();
     try {

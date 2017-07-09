@@ -18,27 +18,32 @@ import java.nio.file.Files;
 
 public class GatewayAll {
 
+  /**
+   * app main.
+   * 
+   * @param args application arguments.
+   */
   public static void main(String[] args) {
     RedissonClient client = Redisson.create();
     RedisOrganizations accountManager = new RedisOrganizations(client);
     accountManager.clearAll();
-    
+
     Microservices seed = Microservices.builder().build();
-    
+
     RedisAccountService account = new RedisAccountService(client);
-    RedisConfigurationService configuration  = new RedisConfigurationService(client);
-    
-    Microservices ms = Microservices.builder()
-      .services(account,configuration)
-      .seeds(seed.cluster().address())
-      .build();
-    
-    AccountGateway.start(8080,seed);
-    ConfigurationGateway.start(8080,seed);
+    RedisConfigurationService configuration = new RedisConfigurationService(client);
+
+    Microservices.builder()
+        .services(account, configuration)
+        .seeds(seed.cluster().address())
+        .build();
+
+    AccountGateway.start(8080, seed);
+    ConfigurationGateway.start(8080, seed);
     On.port(8080).get("/").html(www());
   }
 
-  private static String www(){
+  private static String www() {
     try {
       URL url = GatewayAll.class.getResource("index.html");
       File file = new File(url.getPath());

@@ -21,6 +21,12 @@ public class AccountGateway {
     start(8080, node);
   }
 
+  /**
+   * Start the account gateway on a secific port.
+   * 
+   * @param port to start the gateway on.
+   * @param seed node to join the cluster with.
+   */
   public static void start(int port, Microservices seed) {
     AccountService accountService = seed.proxy().api(AccountService.class).create();
 

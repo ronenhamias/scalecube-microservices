@@ -8,4 +8,7 @@ public class GetOrganizationMembersResponse {
     this.members = members;
   }
 
+  public OrganizationMember[] members() {
+    return this.members;
+  }
 }

@@ -10,4 +10,11 @@ public class DeleteOrganizationResponse {
     this.organizationId = organizationId;
   }
 
+  public boolean deleted() {
+    return this.deleted;
+  }
+
+  public String organizationId() {
+    return this.organizationId;
+  }
 }

@@ -2,11 +2,6 @@ package io.scalecube.account.api;
 
 public class Organization {
 
-  @Override
-  public String toString() {
-    return "Organization [name=" + name + ", apiKey=" + apiKeys + ", id=" + id + ", ownerId=" + ownerId + "]";
-  }
-
   private String name;
 
   private ApiKey[] apiKeys;
@@ -114,5 +109,8 @@ public class Organization {
     }
   }
 
-
+  @Override
+  public String toString() {
+    return "Organization [name=" + name + ", apiKey=" + apiKeys + ", id=" + id + ", ownerId=" + ownerId + "]";
+  }
 }

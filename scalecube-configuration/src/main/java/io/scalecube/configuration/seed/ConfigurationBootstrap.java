@@ -7,14 +7,19 @@ import org.redisson.Redisson;
 
 public class ConfigurationBootstrap {
 
+  /**
+   * Main Redis configuration service bootstraper.
+   * 
+   * @param args application params.
+   */
   public static void main(String[] args) {
-    
+
     RedisConfigurationService service = new RedisConfigurationService(Redisson.create());
-    
+
     Microservices ms = Microservices.builder()
-      .services(service)
-      .build();
-   
+        .services(service)
+        .build();
+
     System.out.println(ms.cluster().address());
   }
 

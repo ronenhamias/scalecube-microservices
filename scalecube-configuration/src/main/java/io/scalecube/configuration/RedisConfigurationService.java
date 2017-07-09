@@ -27,22 +27,24 @@ public class RedisConfigurationService implements ConfigurationService {
   private AccountService accountService;
 
   private final RedisStore<Document> store;
-  
-  public RedisConfigurationService(RedissonClient client){
+
+  public RedisConfigurationService(RedissonClient client) {
     store = new RedisStore<Document>(client);
   }
+
   private static final String PERMISSIONS_LEVEL = "permissions-level";
 
   private enum Permissions {
     read, write
   }
 
+  @Override
   public CompletableFuture<FetchResponse> fetch(final FetchRequest request) {
     final CompletableFuture<FetchResponse> future = new CompletableFuture<>();
     accountService.register(request.token()).whenComplete((success, error) -> {
       if (error == null) {
         final Document result = store.get(getCollectionName(request), request.key());
-        if(result!=null) {
+        if (result != null) {
           future.complete(FetchResponse.builder()
               .key(result.key())
               .value(result.value())

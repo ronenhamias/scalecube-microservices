@@ -2,11 +2,13 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>io.scalecube</groupId>
+	<parent>
+		<groupId>io.scalecube</groupId>
+		<artifactId>configuration-parent</artifactId>
+		<version>0.0.5-SNAPSHOT</version>
+	</parent>
 	<artifactId>scalecube-gateway-all</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<packaging>jar</packaging>
-
+	
 	<name>scalecube-gateway-all</name>
 	<url>http://maven.apache.org</url>
 
@@ -17,46 +19,42 @@
 	<dependencies>
 		<dependency>
 			<groupId>io.scalecube</groupId>
-			<artifactId>scalecube-services</artifactId>
-			<version>1.0.4</version>
+			<artifactId>scalecube-account-gateway</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 		
-		<dependency>
-			<groupId>io.scalecube</groupId>
-			<artifactId>scalecube-account-gateway</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
 		<dependency>
 			<groupId>io.scalecube</groupId>
 			<artifactId>scalecube-account</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>io.scalecube</groupId>
-			<artifactId>scalecube-account-api</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 		
 		<dependency>
 			<groupId>io.scalecube</groupId>
+			<artifactId>scalecube-account-api</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>io.scalecube</groupId>
 			<artifactId>scalecube-configuration</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.scalecube</groupId>
 			<artifactId>scalecube-configuration-api</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.scalecube</groupId>
 			<artifactId>scalecube-configuration-gateway</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>io.scalecube</groupId>
 			<artifactId>scalecube-gateway</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.rapidoid/rapidoid-http -->
 		<dependency>

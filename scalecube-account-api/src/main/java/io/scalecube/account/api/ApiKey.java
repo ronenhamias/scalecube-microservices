@@ -8,15 +8,15 @@ public class ApiKey {
   protected Map<String, String> claims;
   protected String key;
 
-  public String name(){
+  public String name() {
     return this.name;
-  };
+  }
 
-  public Map<String,String> claims(){
+  public Map<String, String> claims() {
     return this.claims;
-  };
-  
-  public String key(){
+  }
+
+  public String key() {
     return this.key;
-  };
+  }
 }

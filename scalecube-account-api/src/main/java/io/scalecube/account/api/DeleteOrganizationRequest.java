@@ -3,7 +3,7 @@ package io.scalecube.account.api;
 public class DeleteOrganizationRequest {
 
   private String organizationId;
-  
+
   private Token token;
 
   public Token token() {

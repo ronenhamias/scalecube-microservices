@@ -18,9 +18,9 @@ public class Organization {
   private String secretKey;
 
   private String email;
-  
-  public Organization(){};
-  
+
+  public Organization() {}
+
   private Organization(String id, String name, String ownerId, String secretKey, ApiKey[] apiKeys, String email) {
     this.id = id;
     this.ownerId = ownerId;
@@ -53,12 +53,12 @@ public class Organization {
   public String email() {
     return this.email;
   }
-  
-  static public Builder builder() {
+
+  public static Builder builder() {
     return new Builder();
   }
 
-  static public class Builder {
+  public static class Builder {
 
     private String ownerId;
 
@@ -76,7 +76,7 @@ public class Organization {
       this.id = id;
       return this;
     }
-    
+
     public Builder ownerId(String ownerId) {
       this.ownerId = ownerId;
       return this;
@@ -96,7 +96,7 @@ public class Organization {
       this.email = email;
       return this;
     }
-    
+
     public Builder secretKey(String secretKey) {
       this.secretKey = secretKey;
       return this;
@@ -106,13 +106,13 @@ public class Organization {
       String email = this.email == null ? source.email : this.email;
       String name = this.name == null ? source.name : this.name;
       ApiKey[] apiKeys = this.apiKeys == null ? source.apiKeys : this.apiKeys;
-      return new Organization(source.id(), name, source.ownerId(), source.secretKey(), apiKeys,email);
+      return new Organization(source.id(), name, source.ownerId(), source.secretKey(), apiKeys, email);
     }
 
     public Organization build() {
-      return new Organization("ORG-"+this.id, this.name, this.ownerId, this.secretKey, this.apiKeys,this.email);
+      return new Organization("ORG-" + this.id, this.name, this.ownerId, this.secretKey, this.apiKeys, this.email);
     }
   }
 
-  
+
 }

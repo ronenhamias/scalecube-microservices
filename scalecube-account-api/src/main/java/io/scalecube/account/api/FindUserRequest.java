@@ -3,7 +3,7 @@ package io.scalecube.account.api;
 public class FindUserRequest {
 
   private Token token;
-  
+
   private String fullNameOrEmail;
 
   public String fullNameOrEmail() {

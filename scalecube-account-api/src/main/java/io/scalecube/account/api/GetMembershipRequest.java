@@ -9,7 +9,7 @@ public class GetMembershipRequest {
   public GetMembershipRequest(Token token) {
     this.token = token;
   }
- 
+
   public Token token() {
     return this.token;
   }

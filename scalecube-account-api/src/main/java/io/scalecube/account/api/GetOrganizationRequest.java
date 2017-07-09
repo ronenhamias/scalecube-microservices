@@ -12,8 +12,8 @@ public class GetOrganizationRequest {
     this.token = token;
     this.organizationId = organizationId;
   }
- 
-  
+
+
   public Token token() {
     return this.token;
   }

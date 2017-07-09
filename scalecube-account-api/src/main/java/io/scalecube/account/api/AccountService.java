@@ -1,9 +1,9 @@
 package io.scalecube.account.api;
 
-import java.util.concurrent.CompletableFuture;
-
 import io.scalecube.services.annotations.Service;
 import io.scalecube.services.annotations.ServiceMethod;
+
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public interface AccountService {

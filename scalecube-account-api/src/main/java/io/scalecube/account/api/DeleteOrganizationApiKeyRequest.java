@@ -5,7 +5,7 @@ public class DeleteOrganizationApiKeyRequest {
   private Token token;
   private String organizationId;
   private String apiKeyName;
- 
+
   public Token token() {
     return this.token;
   }

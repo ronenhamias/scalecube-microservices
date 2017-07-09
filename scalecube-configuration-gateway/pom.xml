@@ -2,9 +2,12 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>io.scalecube</groupId>
+	<parent>
+		<groupId>io.scalecube</groupId>
+		<artifactId>configuration-parent</artifactId>
+		<version>0.0.5-SNAPSHOT</version>
+	</parent>
 	<artifactId>scalecube-configuration-gateway</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>scalecube-configuration-gateway</name>
@@ -18,20 +21,14 @@
 
 		<dependency>
 			<groupId>io.scalecube</groupId>
-			<artifactId>scalecube-services</artifactId>
-			<version>1.0.4</version>
-		</dependency>
-
-		<dependency>
-			<groupId>io.scalecube</groupId>
 			<artifactId>scalecube-gateway</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>io.scalecube</groupId>
 			<artifactId>scalecube-configuration-api</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 
 		<dependency>

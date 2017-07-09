@@ -2,9 +2,13 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>io.scalecube</groupId>
+	<parent>
+		<groupId>io.scalecube</groupId>
+		<artifactId>configuration-parent</artifactId>
+		<version>0.0.5-SNAPSHOT</version>
+	</parent>
+	
 	<artifactId>scalecube-configuration</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>scalecube-configuration</name>
@@ -19,33 +23,15 @@
 		<dependency>
 			<groupId>io.scalecube</groupId>
 			<artifactId>scalecube-account-api</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>io.scalecube</groupId>
-			<artifactId>scalecube-account</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-		
+	
 		<dependency>
 			<groupId>io.scalecube</groupId>
 			<artifactId>scalecube-configuration-api</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-		
-		<dependency>
-			<groupId>org.redisson</groupId>
-			<artifactId>redisson</artifactId>
-			<version>3.4.3</version>
+			<version>${project.version}</version>
 		</dependency>
 
-		<dependency>
-			<groupId>io.scalecube</groupId>
-			<artifactId>scalecube-services</artifactId>
-			<version>1.0.4</version>
-		</dependency>
-
-		
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>

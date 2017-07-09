@@ -10,10 +10,9 @@ public class FindUserResponse {
     this.users = users;
   }
 
-  public FindUserResponse() {
-  }
-  
-  public List<User> users(){
+  public FindUserResponse() {}
+
+  public List<User> users() {
     return users;
   }
 

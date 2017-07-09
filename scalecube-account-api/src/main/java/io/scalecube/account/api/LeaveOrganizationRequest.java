@@ -3,7 +3,7 @@ package io.scalecube.account.api;
 public class LeaveOrganizationRequest {
 
   private Token token;
-  
+
   private String organizationId;
 
   public Token token() {

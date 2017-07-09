@@ -12,7 +12,7 @@ public class GetMembershipResponse {
   private OrganizationInfo[] organizations;
 
   public GetMembershipResponse(OrganizationInfo[] organizationInfos) {
-    this.organizations= organizationInfos;
+    this.organizations = organizationInfos;
   }
 
 }

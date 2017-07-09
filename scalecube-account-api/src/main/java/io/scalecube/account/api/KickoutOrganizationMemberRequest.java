@@ -17,5 +17,5 @@ public class KickoutOrganizationMemberRequest {
   public String userId() {
     return this.userId;
   }
-  
+
 }

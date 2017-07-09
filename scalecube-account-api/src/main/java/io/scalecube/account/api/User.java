@@ -3,28 +3,32 @@ package io.scalecube.account.api;
 import java.util.Map;
 
 public class User {
-  
+
   @Override
   public int hashCode() {
-      return id.hashCode();
+    return id.hashCode();
   }
-  
+
   @Override
   public boolean equals(Object obj) {
-    if (obj == null)
+    if (obj == null) {
       return false;
+    }
     User other = (User) obj;
-    
-    if (getClass() != obj.getClass())
+
+    if (getClass() != obj.getClass()) {
       return false;
-    
-    if (this.id.equals(other.id()))
+    }
+
+    if (this.id.equals(other.id())) {
       return true;
-    
+    }
+
     return false;
   }
 
-  public User(){}
+  public User() {}
+
   // Get profile information from payload
   private String id;
   private String email;
@@ -35,7 +39,20 @@ public class User {
   private String familyName;
   private String givenName;
   private Map<String, String> claims;
- 
+
+  /**
+   * User constructor.
+   * 
+   * @param id of the user.
+   * @param email of the user.
+   * @param emailVerified of the user.
+   * @param name of the user.
+   * @param pictureUrl of the user.
+   * @param locale of the user.
+   * @param familyName of the user.
+   * @param givenName of the user.
+   * @param claims additional claims as key values.
+   */
   public User(String id,
       String email,
       boolean emailVerified,
@@ -43,7 +60,7 @@ public class User {
       String pictureUrl,
       String locale,
       String familyName,
-      String givenName, 
+      String givenName,
       Map<String, String> claims) {
 
     this.id = id;
@@ -88,7 +105,7 @@ public class User {
   public String givenName() {
     return this.givenName;
   }
-  
+
   @Override
   public String toString() {
     return "User [id=" + id + ", email=" + email + ", emailVerified=" + emailVerified + ", name=" + name
@@ -96,7 +113,7 @@ public class User {
         + givenName + "]";
   }
 
-  public Map<String,String> claims() {
+  public Map<String, String> claims() {
     return this.claims;
   }
 }

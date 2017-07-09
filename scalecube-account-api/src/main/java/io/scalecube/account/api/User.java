@@ -4,6 +4,17 @@ import java.util.Map;
 
 public class User {
 
+  // Get profile information from payload
+  private String id;
+  private String email;
+  private boolean emailVerified;
+  private String name;
+  private String pictureUrl;
+  private String locale;
+  private String familyName;
+  private String givenName;
+  private Map<String, String> claims;
+
   @Override
   public int hashCode() {
     return id.hashCode();
@@ -29,16 +40,7 @@ public class User {
 
   public User() {}
 
-  // Get profile information from payload
-  private String id;
-  private String email;
-  private boolean emailVerified;
-  private String name;
-  private String pictureUrl;
-  private String locale;
-  private String familyName;
-  private String givenName;
-  private Map<String, String> claims;
+
 
   /**
    * User constructor.

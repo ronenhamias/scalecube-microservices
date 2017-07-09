@@ -23,6 +23,8 @@ import java.util.stream.Collectors;
 
 public class RedisConfigurationService implements ConfigurationService {
 
+  private static final String PERMISSIONS_LEVEL = "permissions-level";
+
   @ServiceProxy
   private AccountService accountService;
 
@@ -31,8 +33,6 @@ public class RedisConfigurationService implements ConfigurationService {
   public RedisConfigurationService(RedissonClient client) {
     store = new RedisStore<Document>(client);
   }
-
-  private static final String PERMISSIONS_LEVEL = "permissions-level";
 
   private enum Permissions {
     read, write

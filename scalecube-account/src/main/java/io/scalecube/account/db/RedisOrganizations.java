@@ -80,11 +80,12 @@ public class RedisOrganizations {
    * @param org to delete.
    */
   public void deleteOrganization(User owner, Organization org) {
-    if (owner.id().equals(org.ownerId())) {
-      if (getOrganizationMembers(org.id()).size() == 1 && getOrganizationMembers(org.id()).contains(owner)) {
-        ConcurrentMap<String, Organization> organizations = redisson.getMap(ORGANIZATIONS_BY_ID);
-        organizations.remove(org.id());
-      }
+    if (owner.id().equals(org.ownerId()) &&
+        getOrganizationMembers(org.id()).size() == 1 &&
+        getOrganizationMembers(org.id()).contains(owner)) {
+
+      ConcurrentMap<String, Organization> organizations = redisson.getMap(ORGANIZATIONS_BY_ID);
+      organizations.remove(org.id());
     }
   }
 

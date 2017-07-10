@@ -94,7 +94,7 @@ public class RedisConfigurationService implements ConfigurationService {
               .build();
 
           store.put(getCollectionName(request), doc.key(), doc);
-          future.complete(new Acknowledgment(true));
+          future.complete(new Acknowledgment());
         } else {
           future.completeExceptionally(
               new InvalidPermissionsException("invalid permissions-level save request requires write access"));
@@ -116,7 +116,7 @@ public class RedisConfigurationService implements ConfigurationService {
       if (error == null) {
         if (getPermissions(success.claims()).ordinal() >= Permissions.write.ordinal()) {
           store.remove(getCollectionName(request), request.key());
-          future.complete(new Acknowledgment(true));
+          future.complete(new Acknowledgment());
         } else {
           future.completeExceptionally(
               new InvalidPermissionsException("invalid permissions-level delete request requires write access"));

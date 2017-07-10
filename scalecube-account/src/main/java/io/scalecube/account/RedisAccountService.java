@@ -58,7 +58,7 @@ public class RedisAccountService implements AccountService {
 
   private final TokenVerification tokenVerifier;
 
-  
+
   public RedisAccountService(RedissonClient redisson) {
     accountManager = new RedisOrganizations(redisson);
     tokenVerifier = new TokenVerification(accountManager);
@@ -105,7 +105,7 @@ public class RedisAccountService implements AccountService {
     CompletableFuture<CreateOrganizationResponse> future = new CompletableFuture<>();
     try {
       final User user = tokenVerifier.verify(request.token());
-      if (user != null) {
+      if (user != null && isKnownUser(user)) {
         final String secretKey = IdGenerator.generateId();
 
         final Organization newOrg = accountManager.createOrganization(user, Organization.builder()
@@ -120,7 +120,7 @@ public class RedisAccountService implements AccountService {
             newOrg.name(),
             newOrg.apiKeys(),
             newOrg.email(),
-            newOrg.email()));
+            newOrg.ownerId()));
 
       } else {
         future.completeExceptionally(new InvalidAuthenticationToken());
@@ -129,6 +129,10 @@ public class RedisAccountService implements AccountService {
       future.completeExceptionally(ex);
     }
     return future;
+  }
+
+  private boolean isKnownUser(User user) {
+    return accountManager.getUser(user.id()) != null;
   }
 
   @Override
@@ -141,7 +145,7 @@ public class RedisAccountService implements AccountService {
       checkNotNull(request.apiKeyName(), "apiKeyName is a required argument");
 
       final User user = tokenVerifier.verify(request.token());
-      if (user != null) {
+      if (user != null && isKnownUser(user)) {
         final Organization org = accountManager.getOrganization(request.organizationId());
 
         ApiKey apiKey = JwtApiKey.builder().origin("account-service")
@@ -180,7 +184,7 @@ public class RedisAccountService implements AccountService {
     CompletableFuture<GetOrganizationResponse> future = new CompletableFuture<>();
     try {
       final User user = tokenVerifier.verify(request.token());
-      if (user != null) {
+      if (user != null && isKnownUser(user)) {
         final Organization org = accountManager.getOrganization(request.organizationId());
 
         List<ApiKey> apiKeys = Arrays.asList(org.apiKeys());
@@ -214,7 +218,7 @@ public class RedisAccountService implements AccountService {
     CompletableFuture<DeleteOrganizationResponse> future = new CompletableFuture<>();
     try {
       final User user = tokenVerifier.verify(request.token());
-      if (user != null) {
+      if (user != null && isKnownUser(user)) {
         final Organization org = accountManager.getOrganization(request.organizationId());
         if (org != null) {
           accountManager.deleteOrganization(user, org);
@@ -240,7 +244,7 @@ public class RedisAccountService implements AccountService {
     CompletableFuture<UpdateOrganizationResponse> future = new CompletableFuture<>();
     try {
       final User owner = tokenVerifier.verify(request.token());
-      if (owner != null) {
+      if (owner != null && isKnownUser(owner)) {
         final Organization org = accountManager.getOrganization(request.organizationId());
         if (org != null) {
 
@@ -274,7 +278,7 @@ public class RedisAccountService implements AccountService {
     Collection<Organization> results = new ArrayList<>();
     try {
       User user = tokenVerifier.verify(request.token());
-      if (user != null) {
+      if (user != null && isKnownUser(user)) {
         results = accountManager.getUserMembership(user);
 
         final List<OrganizationInfo> infos = new ArrayList<>();
@@ -304,7 +308,7 @@ public class RedisAccountService implements AccountService {
     Organization result = null;
     try {
       User user = tokenVerifier.verify(request.token());
-      if (user != null) {
+      if (user != null && isKnownUser(user)) {
         result = accountManager.getOrganization(request.organizationId());
         if (result != null) {
           future.complete(
@@ -341,7 +345,7 @@ public class RedisAccountService implements AccountService {
     Collection<OrganizationMember> result = null;
     try {
       User user = tokenVerifier.verify(request.token());
-      if (user != null) {
+      if (user != null && isKnownUser(user)) {
         result = accountManager.getOrganizationMembers(request.organizationId());
         future.complete(
             new GetOrganizationMembersResponse(
@@ -362,7 +366,7 @@ public class RedisAccountService implements AccountService {
 
     try {
       User owner = tokenVerifier.verify(request.token());
-      if (owner != null) {
+      if (owner != null && isKnownUser(owner)) {
         Organization organization = accountManager.getOrganization(request.organizationId());
         User user = accountManager.getUser(request.userId());
         if (organization != null && user != null) {
@@ -392,7 +396,7 @@ public class RedisAccountService implements AccountService {
 
     try {
       User owner = tokenVerifier.verify(request.token());
-      if (owner != null) {
+      if (owner != null && isKnownUser(owner)) {
         Organization organization = accountManager.getOrganization(request.organizationId());
         User user = accountManager.getUser(request.userId());
         if (organization != null && user != null) {
@@ -422,7 +426,7 @@ public class RedisAccountService implements AccountService {
 
     try {
       User user = tokenVerifier.verify(request.token());
-      if (user != null) {
+      if (user != null && isKnownUser(user)) {
         Organization organization = accountManager.getOrganization(request.organizationId());
         if (organization != null) {
           accountManager.leave(organization, user);

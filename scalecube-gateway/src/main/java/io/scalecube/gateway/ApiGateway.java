@@ -5,6 +5,7 @@ import io.scalecube.services.annotations.ServiceMethod;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 import org.rapidoid.io.IO;
 import org.rapidoid.setup.On;
@@ -28,6 +29,7 @@ public class ApiGateway {
         .withGetterVisibility(Visibility.NONE)
         .withSetterVisibility(Visibility.NONE)
         .withCreatorVisibility(Visibility.NONE));
+    mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
   }
 
   public static final class RouteInfo {

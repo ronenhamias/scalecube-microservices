@@ -45,7 +45,7 @@
 	    console.log("ID Token: " + id_token);
 	    
 	    
-	    post(accountEndpoint + "/account/users/register", {origin:"google", token:id_token});
+	    post(accountEndpoint + "/account/users/token/login", {origin:"google", token:id_token});
 	
 	    var org = post(accountEndpoint + "/account/organization/create", {
 				"name":"test-org",

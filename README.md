@@ -14,6 +14,10 @@ To better understand how the ScaleCube-Configuration service work we first need 
 ## Account Service:
 The account service is responsible to manage users and organizations and the membership of users in organizations. 
 
+The Account Service manages and validates api-keys with write or read permission levels. the api-keys are based on jwt tokens.
+
+See: [Account Service API](https://github.com/scalecube/scalecube-configuration/wiki/Account-Service-API)
+
 ### User
 Users are registered in scalecube-configuration service after they have completed authentication with google and granted rights to the application.
 once google replied with token_id it is sent to the account service for registration and verification, once verified client has responded with the user details.
@@ -26,7 +30,10 @@ once a user is invited to an organization it become organization member, organiz
  - Owner: owners has rights to manage users membership and delete the organization.
  - Members: have the right to view the organization details only
 
+
 ## Configuration Service:
+Any request The configuration service requires an api key issued by the Account-Service and the Configuration service validates the request with the account service to understand validity of the access token and the permission level it has to access the apis.
+
 The configuration service manages collections of [Key, Value]. clients of the configuration service can:
  - Get key from collection - requires read-level api key.
  - List all entries from collection - requires read-level api key.
@@ -34,13 +41,18 @@ The configuration service manages collections of [Key, Value]. clients of the co
  - Delete key from a collection - requires write -level api key.
  
 ### Configuration
- 
+Configuration entry is a key value pair stored in a collection. in the example bellow is an entry that represent some details about logical environment called 'dev' and where its 'url' entry point. so clients may request from the configuration service the 'url' for their 'dev' environment.
+
+its up to the users to determine what is the collection names, keys and values they wish to store and manage as their configuration.
+  
 ```javascript
 {
    "collection":"environments",
    "key":"dev",
-   "value:{
+   "value":{
       "url":"http://localhost:8080"
    }
 }
 ```
+
+

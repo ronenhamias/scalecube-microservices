@@ -23,13 +23,14 @@
 		            console.log(xhr.response);
 		            responseJson = JSON.parse(xhr.response); 
 		        }
+		        
 	    	};
     	};
     	
     	xhr.send(JSON.stringify(json));
     	return responseJson;
 	};    
-	
+;
     function onSignIn(googleUser) {
 	    // Useful data for your client-side scripts:
 	    var profile = googleUser.getBasicProfile();
@@ -45,7 +46,7 @@
 	    console.log("ID Token: " + id_token);
 	    
 	    
-	    post(accountEndpoint + "/account/users/token/login", {origin:"google", token:id_token});
+	    var user = post(accountEndpoint + "/account/users/token/login", {origin:"google", token:id_token});
 	
 	    var org = post(accountEndpoint + "/account/organization/create", {
 				"name":"test-org",
@@ -56,8 +57,17 @@
 			}
 		});	
 	
+	   post(accountEndpoint + "/account/organization/create", {
+				"name":"test-org",
+				"email":"test@email.com",
+				"token":{
+					"origin":"google",
+					"token":id_token + "invalid"
+			}
+		});	
+		
 		post(accountEndpoint + "/account/users/search", {
-				"fullNameOrEmail":"rone",
+				"fullNameOrEmail":user.familyName,
 				"token":{
 					"origin":"google",
 					"token":id_token
@@ -65,7 +75,7 @@
 		});
 		
 		post(accountEndpoint + "/account/users/search", {
-				"fullNameOrEmail":"ronen nachmias",
+				"fullNameOrEmail":user.givenName,
 				"token":{
 					"origin":"google",
 					"token":id_token
@@ -73,7 +83,7 @@
 		});
 		
 		post(accountEndpoint + "/account/users/search", {
-				"fullNameOrEmail":"ronen@marketspulse.com",
+				"fullNameOrEmail":user.email,
 				"token":{
 					"origin":"google",
 					"token":id_token

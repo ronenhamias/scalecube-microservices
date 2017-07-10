@@ -5,6 +5,7 @@ import io.scalecube.services.annotations.ServiceMethod;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 import org.rapidoid.io.IO;
 import org.rapidoid.setup.On;
@@ -28,6 +29,7 @@ public class ApiGateway {
         .withGetterVisibility(Visibility.NONE)
         .withSetterVisibility(Visibility.NONE)
         .withCreatorVisibility(Visibility.NONE));
+    mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
   }
 
   public static final class RouteInfo {
@@ -53,27 +55,41 @@ public class ApiGateway {
         req.async();
 
         Method method = builder.serviceMethods.get(methodName);
-        Class<?> requestType = null;
-        if (method.getParameterCount() > 0) {
-          requestType = method.getParameterTypes()[0];
-        }
 
-        Object request = mapper.readValue(req.body(), requestType);
-        Object result = method.invoke(builder.serviceInstance, request);
+        Object result = null;
+
+        if (method.getParameterCount() > 0) {
+          Object request = mapper.readValue(req.body(), method.getParameterTypes()[0]);
+          result = method.invoke(builder.serviceInstance, request);
+        } else {
+          result = method.invoke(builder.serviceInstance);
+        }
 
         if (result != null && result instanceof CompletableFuture) {
           CompletableFuture<?> future = (CompletableFuture<?>) result;
           future.whenComplete((success, error) -> {
-            try {
-              IO.write(req.response().out(), mapper.writeValueAsBytes(success));
-              req.done();
-            } catch (JsonProcessingException e) {
-              IO.write(req.response().out(), "{\"message\":\"" + e.getMessage() + "\"}");
-              req.done();
+            if (success != null) {
+              try {
+                IO.write(req.response().out(), mapper.writeValueAsBytes(success));
+                req.done();
+              } catch (JsonProcessingException e) {
+                IO.write(req.response().out(), "{\"message\":\"" + e.getMessage() + "\"}");
+                req.done();
+              }
+            } else {
+              if (error.getClass().getSimpleName().equals("InvalidAuthenticationToken")) {
+                req.response().code(401);
+                IO.write(req.response().out(), "{\"message\":\"InvalidAuthenticationToken\"}");
+                req.done();
+              } else {
+                req.response().code(400);
+                IO.write(req.response().out(), "{\"message\":\"" + error.getMessage() + "\"}");
+                req.done();
+              }
+
             }
           });
         }
-
 
         return req;
 

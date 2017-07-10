@@ -32,7 +32,7 @@ public class AccountGateway {
 
     ApiGateway.builder().port(port)
         .instance(accountService).api(AccountService.class)
-        .route("POST", "/account/users/register").to("register")
+        .route("POST", "/account/users/token/login").to("register")
         .route("POST", "/account/users/search").to("searchUser")
         .route("POST", "/account/organization/create").to("createOrganization")
         .route("POST", "/account/organization/api-key/add").to("addOrganizationApiKey")

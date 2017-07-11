@@ -40,13 +40,19 @@ public class GatewayAll {
 
     AccountGateway.start(8080, seed);
     ConfigurationGateway.start(8080, seed);
-    On.port(8080).get("/").html(www());
+    On.port(8080).get("/").html(www(args[0]));
   }
 
-  private static String www() {
+  private static String www(String workFir) {
     try {
       URL url = GatewayAll.class.getResource("index.html");
-      File file = new File(url.getPath());
+      File file;
+      if (url != null) {
+        file = new File(url.getPath());
+      } else {
+        file = new File(workFir + "/index.html");
+      }
+      System.out.println("file path:" + file.toPath());
       return new String(Files.readAllBytes(file.toPath()));
     } catch (IOException e) {
       e.printStackTrace();

@@ -7,18 +7,7 @@
 
 Web Site: [http://scalecube.io](http://scalecube.io/)
 
-## GETTING STARTED:
-
----
-Running Everything locally:
-- install redis.
-- clone the project
-- run GatewayAll main.
-- open your browser in http://localhost:8080
-- Login to google.
-- check your browser consul to see the interaction with the server.
-
-## UNDERSTAND CONFIGURATION SERVICE:
+## CONFIGURATION SERVICE:
 
 ---
 ScaleCube-Configuration Service is a Multi-Tenant configuration service that enables clients to store key, value pairs in collections of data where the value is any json object. it is based on [redisson](https://github.com/redisson/redisson) project and [redis](https://redis.io/) as persistence storage.
@@ -68,5 +57,16 @@ its up to the users to determine what is the collection names, keys and values t
    }
 }
 ```
+
+### GETTING STARTED:
+
+---
+Running Everything locally:
+- install redis.
+- clone the project
+- run GatewayAll main.
+- open your browser in http://localhost:8080
+- Login to google.
+- check your browser consul to see the interaction with the server.
 
 

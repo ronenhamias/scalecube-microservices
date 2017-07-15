@@ -55,6 +55,15 @@
 					"token":id_token
 			}
 		});	
+		org = post(accountEndpoint + "/account/organization/update", {
+		        "organizationId": org.id;
+				"name": "test-org",
+				"email": "test@email.com",
+				"token": {
+					"origin": "google",
+					"token": id_token
+			}
+		});
 	
 		post(accountEndpoint + "/account/users/search", {
 				"fullNameOrEmail":"rone",

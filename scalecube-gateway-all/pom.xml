@@ -14,6 +14,8 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<!-- Name of Docker image that will be built. -->
+		<docker.image.name>scalecube-gateway-all</docker.image.name>
 	</properties>
 
 	<dependencies>
@@ -75,38 +77,56 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+
 	<build>
+		<finalName>server</finalName>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+				<includes>
+					<include>**/*.prop</include>
+				</includes>
+			</resource>
+		</resources>
 		<plugins>
+			<!-- Use Java 8 -->
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.3</version>
 				<configuration>
 					<source>1.8</source>
 					<target>1.8</target>
-					<compilerArgs>
-						<arg>-proc:none</arg>
-						<arg>-Xlint:unchecked</arg>
-					</compilerArgs>
 				</configuration>
 			</plugin>
-			<!-- any other plugins -->
+			<!-- Set up JAR manifest -->
 			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<classpathPrefix>lib/</classpathPrefix>
+							<mainClass>io.scalecube.gateway.all.GatewayAll</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+			<!-- Copy Maven dependencies into target/lib/ -->
+			<plugin>
+				<artifactId>maven-dependency-plugin</artifactId>
 				<executions>
 					<execution>
-						<phase>package</phase>
+						<phase>install</phase>
 						<goals>
-							<goal>single</goal>
+							<goal>copy-dependencies</goal>
 						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/lib</outputDirectory>
+						</configuration>
 					</execution>
 				</executions>
-				<configuration>
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
-				</configuration>
 			</plugin>
+
 		</plugins>
 	</build>
 

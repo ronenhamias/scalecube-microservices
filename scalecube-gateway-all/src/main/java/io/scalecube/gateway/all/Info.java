@@ -1,16 +1,14 @@
 package io.scalecube.gateway.all;
 
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.management.ManagementFactory;
-import java.net.URL;
 import java.util.Properties;
 
 public class Info {
 
-  final Properties properties = new Properties();
+  private final Properties properties = new Properties();
 
   /**
    * Runtime Environment information provider.

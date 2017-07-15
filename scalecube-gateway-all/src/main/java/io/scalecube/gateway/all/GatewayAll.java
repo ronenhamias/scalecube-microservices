@@ -14,10 +14,8 @@ import org.redisson.config.Config;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
-import java.util.Properties;
 
 public class GatewayAll {
 
@@ -70,8 +68,6 @@ public class GatewayAll {
         .pid(info.pid())
         .website().draw();
   }
-
-
 
   private static String www(String workFir) {
     try {

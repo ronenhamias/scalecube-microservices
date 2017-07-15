@@ -1,16 +1,16 @@
 FROM java
 
 # Add Maven dependencies (not shaded into the artifact; Docker-cached)
-ADD target/lib                                             /usr/dev/root/lib
+COPY target/lib                                             /usr/dev/root/lib
 
 # Add index html as demo file.
-ADD src/main/java/io/scalecube/gateway/all/index.html      /usr/dev/root/lib/index.html
+COPY src/main/java/io/scalecube/gateway/all/index.html      /usr/dev/root/lib/index.html
 
 # copy package information.
-ADD target/maven-archiver/pom.properties                   /usr/dev/root/lib/package.properties
+COPY target/maven-archiver/pom.properties                   /usr/dev/root/lib/package.properties
 
 # Add the service itself
-ADD target/server.jar                                      /usr/dev/root/server.jar
+COPY target/server.jar                                      /usr/dev/root/server.jar
 
 EXPOSE 8080
 

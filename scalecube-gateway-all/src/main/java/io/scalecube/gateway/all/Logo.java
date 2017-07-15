@@ -7,7 +7,7 @@ public class Logo {
 
   public static class LogoHeader {
     private static final String space = "        ";
-    String value;
+    private String value;
 
     public LogoHeader(String value) {
       this.value = space + value;
@@ -20,7 +20,7 @@ public class Logo {
 
   public static class Builder {
     private int index = 0;
-    private int startAt = 7;
+    private int startAt = 5;
     private Map<Integer, LogoHeader> headers = new HashMap<>();
 
     public Builder ip(String value) {

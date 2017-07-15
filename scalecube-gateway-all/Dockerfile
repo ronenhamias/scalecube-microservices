@@ -1,4 +1,5 @@
-FROM java
+FROM anapsix/alpine-java:8_jdk
+MAINTAINER info@scalecube.io
 
 # Add Maven dependencies (not shaded into the artifact; Docker-cached)
 COPY target/lib                                             /usr/dev/root/lib

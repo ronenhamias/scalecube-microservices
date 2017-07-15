@@ -29,6 +29,7 @@ after_success:
   - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
   - cd scalecube-gateway-all
   - docker build -t gateway-all:latest .
-  - docker tag gateway-all $DOCKER_USERNAME/gateway-all
-  - docker push $DOCKER_USERNAME/scalecube:gateway-all
+  - docker images
+  - docker tag gateway-all:latest $DOCKER_USERNAME/scalecube
+  - docker push $DOCKER_USERNAME/scalecube
   

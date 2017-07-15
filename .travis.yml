@@ -26,7 +26,8 @@ after_success:
   - java -cp ~/codacy-coverage-reporter-assembly-latest.jar com.codacy.CodacyCoverageReporter -l Java -r ./scalecube-configuration/target/site/jacoco/jacoco.xml
   - java -cp ~/codacy-coverage-reporter-assembly-latest.jar com.codacy.CodacyCoverageReporter -l Java -r ./scalecube-configuration-gateway/target/site/jacoco/jacoco.xml
   - java -cp ~/codacy-coverage-reporter-assembly-latest.jar com.codacy.CodacyCoverageReporter -l Java -r ./scalecube-gateway-all/target/site/jacoco/jacoco.xml
+  - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
   - cd scalecube-gateway-all
   - docker build -t gateway-all:latest .
-  - docker push ronenna/scalecube:latest
+  - docker push ronenna/scalecube:gateway-all
   

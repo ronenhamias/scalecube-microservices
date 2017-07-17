@@ -21,7 +21,7 @@ EXPOSE 4802
 # ScaleCube home folder
 ENV SC_HOME=/usr/dev/root/lib/
 
-# ScaleCube comma seperated seed node address list used for joining the cluster
+# ScaleCube comma separated seed node address list used for joining the cluster
 ENV SC_SEED_ADDRESS=172.17.0.2:4801, 172.17.0.3:4801
 
 ENTRYPOINT ["java", "-jar", "/usr/dev/root/server.jar"]

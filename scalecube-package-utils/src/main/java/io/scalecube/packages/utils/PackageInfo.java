@@ -1,4 +1,6 @@
-package io.scalecube.gateway.all;
+package io.scalecube.packages.utils;
+
+import io.scalecube.transport.Address;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -6,14 +8,18 @@ import java.io.InputStream;
 import java.lang.management.ManagementFactory;
 import java.util.Properties;
 
-public class Info {
+/**
+ * Information provider about the environment and the package of this instance.
+ *
+ */
+public class PackageInfo {
 
   private final Properties properties = new Properties();
 
   /**
    * Runtime Environment information provider.
    */
-  public Info() {
+  public PackageInfo() {
     if (System.getenv("SC_HOME") != null) {
       String path = System.getenv("SC_HOME");
 
@@ -25,7 +31,7 @@ public class Info {
         defaultProps();
       }
     } else {
-      InputStream stream = Info.class.getResourceAsStream("package.properties");
+      InputStream stream = PackageInfo.class.getResourceAsStream("package.properties");
       if (stream != null) {
         try {
           properties.load(stream);
@@ -86,6 +92,20 @@ public class Info {
     return "redis://" + address + ":" + port;
   }
 
+  /**
+   * Resolve seed address from environment variable or system property.
+   * 
+   * @return seed address as string for example localhost:4801.
+   */
+  public Address seedAddress() {
+    String hostAndPort = getVariable("SC_SEED_ADDRESS", null);
+    if (hostAndPort != null && !hostAndPort.isEmpty()) {
+      return Address.from(getVariable("SC_SEED_ADDRESS", "localhost"));
+    } else {
+      return null;
+    }
+  }
+
   private String getVariable(String name, String defaultValue) {
     if (System.getenv(name) != null) {
       return System.getenv(name);
@@ -95,4 +115,6 @@ public class Info {
     }
     return defaultValue;
   }
+
+
 }

@@ -1,4 +1,4 @@
-package io.scalecube.gateway.all;
+package io.scalecube.packages.utils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +27,7 @@ public class Logo {
       headers.put(startAt + headers.size() + 1, new LogoHeader("IP Address: #1".replaceAll("#1", value)));
       return this;
     }
-    
+
     public Builder tagVersion(String value) {
       headers.put(startAt + headers.size() + 1, new LogoHeader("ScaleCube #1 is Running.".replaceAll("#1", value)));
       return this;
@@ -57,9 +57,14 @@ public class Logo {
       headers.put(startAt + headers.size() + 1, new LogoHeader("PID: #1".replaceAll("#1", value)));
       return this;
     }
-    
+
     public Builder javaVersion(String value) {
       headers.put(startAt + headers.size() + 1, new LogoHeader("Java: #1".replaceAll("#1", value)));
+      return this;
+    }
+
+    public Builder header(String header) {
+      headers.put(startAt + headers.size() + 1, new LogoHeader(header));
       return this;
     }
 
@@ -67,6 +72,8 @@ public class Logo {
       headers.put(startAt + headers.size() + 2, new LogoHeader("      http://scalecube.io"));
       return this;
     }
+
+
 
     /**
      * draw the scalecube logo.
@@ -111,6 +118,8 @@ public class Logo {
       }
       index++;
     }
+
+
   }
 
   public static Builder builder() {

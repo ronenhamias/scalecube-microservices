@@ -5,6 +5,8 @@ import io.scalecube.account.db.RedisOrganizations;
 import io.scalecube.account.gateway.AccountGateway;
 import io.scalecube.configuration.RedisConfigurationService;
 import io.scalecube.configuration.gateway.ConfigurationGateway;
+import io.scalecube.packages.utils.PackageInfo;
+import io.scalecube.packages.utils.Logo;
 import io.scalecube.services.Microservices;
 
 import org.rapidoid.setup.On;
@@ -27,7 +29,7 @@ public class GatewayAll {
    */
   public static void main(String[] args) throws IOException {
 
-    Info info = new Info();
+    PackageInfo info = new PackageInfo();
 
     Config config = new Config();
     config.useSingleServer()

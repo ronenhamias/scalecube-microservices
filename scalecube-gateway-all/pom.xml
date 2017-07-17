@@ -12,12 +12,6 @@
 	<name>scalecube-gateway-all</name>
 	<url>http://maven.apache.org</url>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<!-- Name of Docker image that will be built. -->
-		<docker.image.name>scalecube-gateway-all</docker.image.name>
-	</properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>io.scalecube</groupId>
@@ -58,6 +52,11 @@
 			<artifactId>scalecube-gateway</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>io.scalecube</groupId>
+			<artifactId>scalecube-package-utils</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.rapidoid/rapidoid-http -->
 		<dependency>
 			<groupId>org.rapidoid</groupId>
@@ -80,15 +79,7 @@
 
 	<build>
 		<finalName>server</finalName>
-		<resources>
-			<resource>
-				<directory>src/main/resources</directory>
-				<filtering>true</filtering>
-				<includes>
-					<include>**/*.prop</include>
-				</includes>
-			</resource>
-		</resources>
+
 		<plugins>
 			<!-- Use Java 8 -->
 			<plugin>

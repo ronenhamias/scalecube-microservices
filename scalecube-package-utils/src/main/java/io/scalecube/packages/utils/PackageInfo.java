@@ -6,7 +6,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.management.ManagementFactory;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 /**
  * Information provider about the environment and the package of this instance.
@@ -97,10 +101,16 @@ public class PackageInfo {
    * 
    * @return seed address as string for example localhost:4801.
    */
-  public Address seedAddress() {
-    String hostAndPort = getVariable("SC_SEED_ADDRESS", null);
-    if (hostAndPort != null && !hostAndPort.isEmpty()) {
-      return Address.from(getVariable("SC_SEED_ADDRESS", "localhost"));
+  public Address[] seedAddress() {
+    String list = getVariable("SC_SEED_ADDRESS", null);
+    if (list != null && !list.isEmpty()) {
+      String[] hosts = list.split(",");
+      List<Address> seedList = Arrays.asList(hosts).stream().filter(predicate -> !predicate.isEmpty())
+          .map(mapper -> mapper.trim())
+          .map(hostAndPort -> {
+            return Address.from(hostAndPort);
+          }).collect(Collectors.toList());
+      return seedList.toArray(new Address[seedList.size()]);
     } else {
       return null;
     }

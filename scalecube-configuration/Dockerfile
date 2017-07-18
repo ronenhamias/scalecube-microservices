@@ -14,7 +14,7 @@ EXPOSE 8081
 EXPOSE 4801
 EXPOSE 4802
 
-ENV API_GATEWAY_PORT 8081
+
 ENV SC_HOME=/usr/dev/root/
 
 ENTRYPOINT ["java", "-jar", "/usr/dev/root/server.jar"]

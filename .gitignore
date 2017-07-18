@@ -3,6 +3,9 @@
 .classpath
 .settings
 
+# java classes
+*.class
+
 # IntelliJ IDEA project files and directories
 *.iml
 *.ipr

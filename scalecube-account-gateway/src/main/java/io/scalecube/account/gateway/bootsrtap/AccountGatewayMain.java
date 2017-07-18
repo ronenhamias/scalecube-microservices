@@ -1,24 +1,36 @@
-package io.scalecube.account.gateway;
+package io.scalecube.account.gateway.bootsrtap;
 
 import io.scalecube.account.api.AccountService;
 import io.scalecube.gateway.ApiGateway;
+import io.scalecube.packages.utils.Logo;
+import io.scalecube.packages.utils.PackageInfo;
 import io.scalecube.services.Microservices;
-import io.scalecube.transport.Address;
 
-public class AccountGateway {
-
-  private static Microservices connectSeed(String host, int port) throws Exception {
-
-    final Microservices node = Microservices.builder()
-        .seeds(Address.create("10.0.75.1", 4801))
-        .build();
-    return node;
-  }
+public class AccountGatewayMain {
 
   public static void main(String[] args) throws Exception {
-    final Microservices node = connectSeed("10.0.75.1", 4801);
+    PackageInfo info = new PackageInfo();
 
-    start(8080, node);
+    final Microservices seed;
+
+    if (info.seedAddress() != null) {
+      seed = Microservices.builder().seeds(info.seedAddress()).build();
+    } else {
+      seed = Microservices.builder().build();
+    }
+
+    start(info.gatewayPort(), seed);
+
+    Logo.builder().tagVersion(info.version())
+        .port(seed.cluster().address().port() + "")
+        .header("Api-Gateway port: " + info.gatewayPort())
+        .ip(seed.cluster().address().host())
+        .group(info.groupId())
+        .artifact(info.artifactId())
+        .javaVersion(info.java())
+        .osType(info.os())
+        .pid(info.pid())
+        .website().draw();
   }
 
   /**

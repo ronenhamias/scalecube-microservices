@@ -29,10 +29,4 @@ after_success:
   
   - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
   - bash docker_build.sh $DOCKER_USERNAME $TRAVIS_BUILD_DIR scalecube-gateway-all
-  
-  - cd $TRAVIS_BUILD_DIR/scalecube-seed
-  - docker build -t scalecube-seed:scalecube-seed .
-  - docker images
-  - docker tag scalecube-seed:scalecube-seed $DOCKER_USERNAME/scalecube:scalecube-seed
-  - docker push $DOCKER_USERNAME/scalecube:scalecube-seed
-  
+  - bash docker_build.sh $DOCKER_USERNAME $TRAVIS_BUILD_DIR scalecube-seed

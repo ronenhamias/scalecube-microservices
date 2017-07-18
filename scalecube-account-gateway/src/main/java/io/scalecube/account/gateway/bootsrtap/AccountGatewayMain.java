@@ -8,6 +8,11 @@ import io.scalecube.services.Microservices;
 
 public class AccountGatewayMain {
 
+  /**
+   * main bootstrap starting account gateway instance.
+   * @param args none.
+   * @throws Exception in case of error.
+   */
   public static void main(String[] args) throws Exception {
     PackageInfo info = new PackageInfo();
 

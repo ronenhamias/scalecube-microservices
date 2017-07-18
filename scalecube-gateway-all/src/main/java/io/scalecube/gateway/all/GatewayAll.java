@@ -25,8 +25,8 @@ public class GatewayAll {
   public static void main(String[] args) throws IOException {
 
     PackageInfo info = new PackageInfo();
-
     Config config = new Config();
+
     config.useSingleServer()
         .setAddress(info.redisAddress())
         .setConnectionPoolSize(10);
@@ -39,8 +39,8 @@ public class GatewayAll {
             new RedisConfigurationService(client))
         .build();
 
-    AccountGateway.start(8081, seed);
-    ConfigurationGateway.start(8081, seed);
+    AccountGateway.start(info.gatewayPort(), seed);
+    ConfigurationGateway.start(info.gatewayPort(), seed);
 
     Logo.builder().tagVersion(info.version())
         .port(seed.cluster().address().port() + "")

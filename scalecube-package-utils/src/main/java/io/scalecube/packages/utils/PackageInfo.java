@@ -96,6 +96,14 @@ public class PackageInfo {
   }
 
   /**
+   * Returns API Gateway API.
+   */
+  public int gatewayPort() {
+    String port = getVariable("API_GATEWAY_PORT", "8081");
+    return Integer.valueOf(port);
+  }
+
+  /**
    * Resolve seed address from environment variable or system property.
    * 
    * @return seed address as string for example localhost:4801.
@@ -124,6 +132,7 @@ public class PackageInfo {
     }
     return defaultValue;
   }
+
 
 
 }

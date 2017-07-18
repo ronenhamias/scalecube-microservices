@@ -4,7 +4,6 @@ import io.scalecube.account.RedisAccountService;
 import io.scalecube.packages.utils.Logo;
 import io.scalecube.packages.utils.PackageInfo;
 import io.scalecube.services.Microservices;
-import io.scalecube.transport.Address;
 
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;

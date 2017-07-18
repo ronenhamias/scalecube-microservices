@@ -1,13 +1,16 @@
 <html lang="en">
 <head>
     <meta name="google-signin-scope" content="profile email">
+    <-- 
+       Change to your google client id and make sure to allow your origin for this client id.
+    -->
     <meta name="google-signin-client_id" content="132044490342-vj48declsaj0k2f72hn0t79dsoid5kvc.apps.googleusercontent.com">
     <script src="https://apis.google.com/js/platform.js" async defer></script>
 </head>
 <body>
 <div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
 <script>
-	var accountEndpoint = "http://localhost:8080";
+	var accountEndpoint = "http://localhost:8081";
 	var configurationEndpoint = "http://localhost:8081";
 	
     var xhr = new XMLHttpRequest();   // new HttpRequest instance
@@ -23,13 +26,14 @@
 		            console.log(xhr.response);
 		            responseJson = JSON.parse(xhr.response); 
 		        }
+		        
 	    	};
     	};
     	
     	xhr.send(JSON.stringify(json));
     	return responseJson;
 	};    
-	
+;
     function onSignIn(googleUser) {
 	    // Useful data for your client-side scripts:
 	    var profile = googleUser.getBasicProfile();
@@ -45,7 +49,7 @@
 	    console.log("ID Token: " + id_token);
 	    
 	    
-	    post(accountEndpoint + "/account/users/register", {origin:"google", token:id_token});
+	    var user = post(accountEndpoint + "/account/users/token/login", {origin:"google", token:id_token});
 	
 	    var org = post(accountEndpoint + "/account/organization/create", {
 				"name":"test-org",
@@ -55,18 +59,18 @@
 					"token":id_token
 			}
 		});	
-		org = post(accountEndpoint + "/account/organization/update", {
-		        "organizationId": org.id;
-				"name": "test-org",
-				"email": "test@email.com",
-				"token": {
-					"origin": "google",
-					"token": id_token
-			}
-		});
 	
+	   post(accountEndpoint + "/account/organization/create", {
+				"name":"test-org",
+				"email":"test@email.com",
+				"token":{
+					"origin":"google",
+					"token":id_token + "invalid"
+			}
+		});	
+		
 		post(accountEndpoint + "/account/users/search", {
-				"fullNameOrEmail":"rone",
+				"fullNameOrEmail":user.familyName,
 				"token":{
 					"origin":"google",
 					"token":id_token
@@ -74,7 +78,7 @@
 		});
 		
 		post(accountEndpoint + "/account/users/search", {
-				"fullNameOrEmail":"ronen nachmias",
+				"fullNameOrEmail":user.givenName,
 				"token":{
 					"origin":"google",
 					"token":id_token
@@ -82,7 +86,7 @@
 		});
 		
 		post(accountEndpoint + "/account/users/search", {
-				"fullNameOrEmail":"ronen@marketspulse.com",
+				"fullNameOrEmail":user.email,
 				"token":{
 					"origin":"google",
 					"token":id_token

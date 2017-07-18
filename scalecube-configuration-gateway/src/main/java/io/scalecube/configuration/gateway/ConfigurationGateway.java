@@ -29,6 +29,7 @@ public class ConfigurationGateway {
     ConfigurationService service = seed.proxy().api(ConfigurationService.class).create();
     ApiGateway.builder().port(8081)
         .instance(service).api(ConfigurationService.class)
+        .crossOriginResourceSharing()
         .route("POST", "/configuration/save").to("save")
         .route("POST", "/configuration/entries").to("entries")
         .route("POST", "/configuration/fetch").to("fetch")

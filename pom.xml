@@ -74,6 +74,7 @@
 		<module>scalecube-gateway</module>
 		<module>scalecube-seed</module>
 		<module>scalecube-package-utils</module>
+		<module>scalecube-webapp-example</module>
 	</modules>
 
 

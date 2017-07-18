@@ -5,6 +5,7 @@ import io.scalecube.account.db.RedisOrganizations;
 import io.scalecube.account.gateway.AccountGateway;
 import io.scalecube.configuration.RedisConfigurationService;
 import io.scalecube.configuration.gateway.ConfigurationGateway;
+import io.scalecube.gateway.ApiGateway;
 import io.scalecube.packages.utils.PackageInfo;
 import io.scalecube.packages.utils.Logo;
 import io.scalecube.services.Microservices;
@@ -38,31 +39,18 @@ public class GatewayAll {
 
     RedissonClient client = Redisson.create(config);
 
-    Microservices seed = Microservices.builder().build();
-    String address = seed.cluster().address().host();
-    RedisOrganizations accountManager = new RedisOrganizations(client);
-    accountManager.clearAll();
-
-    RedisAccountService account = new RedisAccountService(client);
-    RedisConfigurationService configuration = new RedisConfigurationService(client);
-
-    Microservices.builder().port(4801)
-        .services(account, configuration)
-        .seeds(seed.cluster().address())
+    Microservices seed = Microservices.builder().seeds(info.seedAddress())
+        .services(
+            new RedisAccountService(client),
+            new RedisConfigurationService(client))
         .build();
 
-    AccountGateway.start(8080, seed);
-    ConfigurationGateway.start(8080, seed);
-    if (args.length == 0) {
-      On.port(8080).get("/").html(www(null));
-    } else {
-      On.port(8080).get("/").html(www(args[0]));
-    }
-
+    AccountGateway.start(8081, seed);
+    ConfigurationGateway.start(8081, seed);
 
     Logo.builder().tagVersion(info.version())
-        .port("4801")
-        .ip(address)
+        .port(seed.cluster().address().port() + "")
+        .ip(seed.cluster().address().host())
         .group(info.groupId())
         .artifact(info.artifactId())
         .javaVersion(info.java())
@@ -70,23 +58,4 @@ public class GatewayAll {
         .pid(info.pid())
         .website().draw();
   }
-
-  private static String www(String workFir) {
-    try {
-      URL url = GatewayAll.class.getResource("index.html");
-      File file;
-      if (url != null) {
-        file = new File(url.getPath());
-      } else {
-        file = new File(workFir + "/index.html");
-      }
-      System.out.println("file path:" + file.toPath());
-      return new String(Files.readAllBytes(file.toPath()));
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-    return null;
-  }
-
-
 }

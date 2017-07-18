@@ -22,7 +22,7 @@ public class AccountGateway {
   }
 
   /**
-   * Start the account gateway on a secific port.
+   * Start the account gateway on a specific port.
    * 
    * @param port to start the gateway on.
    * @param seed node to join the cluster with.
@@ -32,6 +32,7 @@ public class AccountGateway {
 
     ApiGateway.builder().port(port)
         .instance(accountService).api(AccountService.class)
+        .crossOriginResourceSharing()
         .route("POST", "/account/users/token/login").to("register")
         .route("POST", "/account/users/search").to("searchUser")
         .route("POST", "/account/organization/create").to("createOrganization")

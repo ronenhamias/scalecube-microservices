@@ -118,6 +118,11 @@ public class ApiGateway {
       return this;
     }
 
+    /**
+     * enable CORS, cross origin resource sharing.
+     * 
+     * @return builder.
+     */
     public Builder crossOriginResourceSharing() {
       On.port(this.port).route("OPTIONS", "/*").plain(req -> {
         req.async();

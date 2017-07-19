@@ -23,7 +23,7 @@ EXPOSE 4801 4802 8081
 
 ENV SC_HOME="/usr/dev/root/" \
     SC_SEED_ADDRESS="172.17.0.2:4801, 172.17.0.3:4801" \
-    API_GATEWAY_PORT 8081
+    API_GATEWAY_PORT=8081
 
 
 ENTRYPOINT ["java", "-jar", "/usr/dev/root/server.jar"]

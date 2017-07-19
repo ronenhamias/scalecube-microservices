@@ -5,10 +5,11 @@ ARTIFACT=$3
 
 build(){
   cd $BUILD_DIR/$ARTIFACT
+  MVN_VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive org.codehaus.mojo:exec-maven-plugin:1.3.1:exec)
   docker build -t $ARTIFACT:$ARTIFACT .
   docker images
-  docker tag $ARTIFACT:$ARTIFACT $USERNAME/scalecube:$ARTIFACT
-  docker push $USERNAME/scalecube:$ARTIFACT
+  docker tag $ARTIFACT:$ARTIFACT $USERNAME/scalecube:$ARTIFACT-$MVN_VERSION
+  docker push $USERNAME/scalecube:$ARTIFACT-$MVN_VERSION
   cd $BUILD_DIR
 }
 

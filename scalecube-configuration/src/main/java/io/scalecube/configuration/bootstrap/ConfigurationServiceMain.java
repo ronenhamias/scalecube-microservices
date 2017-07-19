@@ -5,8 +5,6 @@ import io.scalecube.packages.utils.Logo;
 import io.scalecube.packages.utils.PackageInfo;
 import io.scalecube.services.Microservices;
 
-import org.redisson.Redisson;
-
 public class ConfigurationServiceMain {
 
   /**
@@ -18,7 +16,7 @@ public class ConfigurationServiceMain {
 
     PackageInfo info = new PackageInfo();
     
-    RedisConfigurationService service = new RedisConfigurationService(Redisson.create());
+    RedisConfigurationService service = new RedisConfigurationService(info.redisClient());
 
     Microservices seed = Microservices.builder()
         .seeds(info.seedAddress())

@@ -1,27 +1,26 @@
 FROM anapsix/alpine-java:8_jdk
 MAINTAINER info@scalecube.io
 
-ENV SC_USER_HOME=/usr/dev/root
-
 # Add Maven dependencies (not shaded into the artifact; Docker-cached)
 COPY target/lib                                             /usr/dev/root/lib
 
 # copy package information.
-COPY target/maven-archiver/pom.properties                   /usr/dev/root/lib/package.properties
+COPY target/maven-archiver/pom.properties                   /usr/dev/root/package.properties
 
 # Add the service itself
 COPY target/server.jar                                      /usr/dev/root/server.jar
 
-# Cluster control port.
-EXPOSE 4801  
+# Cluster control port and communication port.
+EXPOSE 4801 4802
 
-# Service communication port.
-EXPOSE 4802  
+###################################################################
+# Environment Variables:
+# -----------------------------------------------------------------
+# SC_HOME:         the root folder for a scalecube node.
+# SC_SEED_ADDRESS: the list of seed nodes to join a cluster
+###################################################################
 
-# ScaleCube home folder
-ENV SC_HOME=/usr/dev/root/lib/
-
-# ScaleCube comma separated seed node address list used for joining the cluster
-ENV SC_SEED_ADDRESS="172.17.0.2:4801, 172.17.0.3:4801"
+ENV SC_HOME="/usr/dev/root/" \
+    SC_SEED_ADDRESS="172.17.0.2:4801, 172.17.0.3:4801"
 
 ENTRYPOINT ["java", "-jar", "/usr/dev/root/server.jar"]

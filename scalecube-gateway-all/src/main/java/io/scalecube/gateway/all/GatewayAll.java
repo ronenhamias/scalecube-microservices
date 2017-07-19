@@ -26,7 +26,7 @@ public class GatewayAll {
 
     PackageInfo info = new PackageInfo();
     
-    RedissonClient client = redisClient(info);
+    RedissonClient client = info.redisClient();
 
     Microservices seed = Microservices.builder().seeds(info.seedAddress())
         .services(
@@ -47,15 +47,5 @@ public class GatewayAll {
         .osType(info.os())
         .pid(info.pid())
         .website().draw();
-  }
-
-  private static RedissonClient redisClient(PackageInfo info) {
-    Config config = new Config();
-    config.useSingleServer()
-        .setAddress(info.redisAddress())
-        .setConnectionPoolSize(10);
-
-    RedissonClient client = Redisson.create(config);
-    return client;
   }
 }

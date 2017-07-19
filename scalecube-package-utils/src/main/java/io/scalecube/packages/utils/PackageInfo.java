@@ -2,6 +2,10 @@ package io.scalecube.packages.utils;
 
 import io.scalecube.transport.Address;
 
+import org.redisson.Redisson;
+import org.redisson.api.RedissonClient;
+import org.redisson.config.Config;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -86,13 +90,7 @@ public class PackageInfo {
    * resolves redis address.
    */
   public String redisAddress() {
-    String address = getVariable("REDIS_HOST", "localhost");
-    String port = getVariable("REDIS_PORT", "6379");
-
-    System.out.println("ENV - REDIS HOST: " + address);
-    System.out.println("ENV - REDIS PORT: " + port);
-
-    return "redis://" + address + ":" + port;
+    return getVariable("REDIS_ADDRESS", "redis://localhost:6379");
   }
 
   /**
@@ -131,6 +129,20 @@ public class PackageInfo {
       return System.getProperty(name);
     }
     return defaultValue;
+  }
+
+  /**
+   * Resolve redis client configuration and return a client.
+   * @return RedissonClient to connect to redis server.
+   */
+  public RedissonClient redisClient() {
+    Config config = new Config();
+    config.useSingleServer()
+        .setAddress(redisAddress())
+        .setConnectionPoolSize(10);
+
+    RedissonClient client = Redisson.create(config);
+    return client;
   }
 
 

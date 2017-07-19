@@ -5,10 +5,6 @@ import io.scalecube.packages.utils.Logo;
 import io.scalecube.packages.utils.PackageInfo;
 import io.scalecube.services.Microservices;
 
-import org.redisson.Redisson;
-import org.redisson.api.RedissonClient;
-import org.redisson.config.Config;
-
 public class AccountServiceMain {
 
   /**
@@ -20,16 +16,14 @@ public class AccountServiceMain {
 
     PackageInfo info = new PackageInfo();
 
-    RedissonClient client = redisClient(info);
-
     final Microservices seed;
     if (info.seedAddress() != null) {
       seed = Microservices.builder()
-          .services(new RedisAccountService(client))
+          .services(new RedisAccountService(info.redisClient()))
           .seeds(info.seedAddress()).build();
     } else {
       seed = Microservices.builder()
-          .services(new RedisAccountService(client))
+          .services(new RedisAccountService(info.redisClient()))
           .build();
     }
 
@@ -44,13 +38,4 @@ public class AccountServiceMain {
         .website().draw();
   }
 
-  private static RedissonClient redisClient(PackageInfo info) {
-    Config config = new Config();
-    config.useSingleServer()
-        .setAddress(info.redisAddress())
-        .setConnectionPoolSize(10);
-
-    RedissonClient client = Redisson.create(config);
-    return client;
-  }
 }

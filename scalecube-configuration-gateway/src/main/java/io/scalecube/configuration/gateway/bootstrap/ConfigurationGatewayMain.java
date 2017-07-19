@@ -8,6 +8,11 @@ import io.scalecube.services.Microservices;
 
 public class ConfigurationGatewayMain {
 
+  /**
+   * main bootstrap for Configuration Service.
+   * @param args none.
+   * @throws Exception in case of error.
+   */
   public static void main(String[] args) throws Exception {
     PackageInfo info = new PackageInfo();
 

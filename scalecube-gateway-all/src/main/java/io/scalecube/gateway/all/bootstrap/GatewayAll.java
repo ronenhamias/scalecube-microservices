@@ -1,7 +1,7 @@
-package io.scalecube.gateway.all;
+package io.scalecube.gateway.all.bootstrap;
 
 import io.scalecube.account.RedisAccountService;
-import io.scalecube.account.gateway.bootsrtap.AccountGatewayMain;
+import io.scalecube.account.gateway.bootstrap.AccountGatewayMain;
 import io.scalecube.configuration.RedisConfigurationService;
 import io.scalecube.configuration.gateway.bootstrap.ConfigurationGatewayMain;
 import io.scalecube.packages.utils.Logo;

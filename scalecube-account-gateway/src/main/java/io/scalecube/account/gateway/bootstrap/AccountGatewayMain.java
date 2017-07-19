@@ -1,4 +1,4 @@
-package io.scalecube.account.gateway.bootsrtap;
+package io.scalecube.account.gateway.bootstrap;
 
 import io.scalecube.account.api.AccountService;
 import io.scalecube.gateway.ApiGateway;

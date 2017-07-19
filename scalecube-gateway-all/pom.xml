@@ -97,7 +97,7 @@
 						<manifest>
 							<addClasspath>true</addClasspath>
 							<classpathPrefix>lib/</classpathPrefix>
-							<mainClass>io.scalecube.gateway.all.GatewayAll</mainClass>
+							<mainClass>io.scalecube.gateway.all.bootstrap.GatewayAll</mainClass>
 						</manifest>
 					</archive>
 				</configuration>

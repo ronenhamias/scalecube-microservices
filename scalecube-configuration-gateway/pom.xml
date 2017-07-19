@@ -64,7 +64,7 @@
 						<manifest>
 							<addClasspath>true</addClasspath>
 							<classpathPrefix>lib/</classpathPrefix>
-							<mainClass>io.scalecube.configuration.gateway.bootstrap.ConfigurationGateway</mainClass>
+							<mainClass>io.scalecube.configuration.gateway.bootstrap.ConfigurationGatewayMain</mainClass>
 						</manifest>
 					</archive>
 				</configuration>

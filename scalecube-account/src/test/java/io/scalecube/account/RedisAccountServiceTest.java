@@ -4,24 +4,25 @@ import io.scalecube.account.api.AccountService;
 import io.scalecube.account.api.CreateOrganizationRequest;
 import io.scalecube.account.api.GetMembershipRequest;
 import io.scalecube.account.api.Token;
+import io.scalecube.testlib.BaseTest;
 
+import org.junit.Test;
 import org.redisson.Redisson;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import junit.framework.TestCase;
 
-
-public class TestRedisAccountService extends TestCase {
+public class RedisAccountServiceTest extends BaseTest {
   String googleToken = "";
 
   final AccountService account;
 
-  public TestRedisAccountService() throws Exception {
+  public RedisAccountServiceTest() throws Exception {
     account = new RedisAccountService(Redisson.create());
   }
 
+  @Test
   public void testCreateOrganization() throws Exception {
 
     CountDownLatch latch = new CountDownLatch(1);
@@ -39,7 +40,7 @@ public class TestRedisAccountService extends TestCase {
   }
 
   
-
+  @Test
   public void testGetOrganizationDetails() throws Exception {
     Token token = new Token("google", googleToken);
     account.getUserOrganizationsMembership(new GetMembershipRequest(token))

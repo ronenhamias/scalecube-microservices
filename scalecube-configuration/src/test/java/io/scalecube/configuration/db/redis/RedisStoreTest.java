@@ -2,10 +2,12 @@ package io.scalecube.configuration.db.redis;
 
 import static org.junit.Assert.assertEquals;
 
+import io.scalecube.testlib.BaseTest;
+
 import org.junit.Test;
 import org.redisson.Redisson;
 
-public class RedisStoreTest {
+public class RedisStoreTest extends BaseTest{
   
   private final RedisStore<String> store = new RedisStore<>(Redisson.create());
   

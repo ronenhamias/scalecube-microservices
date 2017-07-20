@@ -74,8 +74,7 @@
 		<module>scalecube-seed</module>
 		<module>scalecube-package-utils</module>
 		<module>scalecube-webapp-example</module>
-    
-  </modules>
+	</modules>
 
 
 	<dependencies>
@@ -94,6 +93,11 @@
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
 			<version>2.7.6</version>
+		</dependency>
+		<dependency>
+			<groupId>io.scalecube</groupId>
+			<artifactId>scalecube-testlib</artifactId>
+			<version>1.0.4</version>
 		</dependency>
 	</dependencies>
 

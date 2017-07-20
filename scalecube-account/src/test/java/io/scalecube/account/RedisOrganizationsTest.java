@@ -4,18 +4,19 @@ import io.scalecube.account.api.Organization;
 import io.scalecube.account.api.User;
 import io.scalecube.account.db.AccessPermissionException;
 import io.scalecube.account.db.RedisOrganizations;
+import io.scalecube.testlib.BaseTest;
 
+import org.junit.Test;
 import org.redisson.Redisson;
 
 import java.util.Collection;
 import java.util.List;
 
-import junit.framework.TestCase;
-
-public class TestRedisStore extends TestCase {
+public class RedisOrganizationsTest extends BaseTest {
 
   private static final String ORG_NAME = "testOrg4";
 
+  @Test
   public void testRedisOrganizationMembers() throws AccessPermissionException {
     RedisOrganizations organizations = new RedisOrganizations(Redisson.create());
     User owner = new User("id0", "email0", true, "name0", "pictureUrl0", "locale0", "familyName0", "givenName0", null);

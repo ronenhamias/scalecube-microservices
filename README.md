@@ -58,10 +58,11 @@ its up to the users to determine what is the collection names, keys and values t
 }
 ```
 
-### GETTING STARTED:
+## GETTING STARTED:
 
 ---
-Running Everything locally:
+### Running Everything locally:
+
 - install redis.
 - clone the project
 - run GatewayAll main.
@@ -69,5 +70,6 @@ Running Everything locally:
 - Login to google.
 - check your browser consul to see the interaction with the server.
 
-Running Microservices cluster on Docker:
+### Running Microservices cluster on Docker:
+
 [see wiki page](https://github.com/scalecube/scalecube-configuration/wiki/Running-ScaleCube-Dockers)

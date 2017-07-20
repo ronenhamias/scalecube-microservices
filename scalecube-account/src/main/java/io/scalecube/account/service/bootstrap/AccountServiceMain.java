@@ -19,11 +19,11 @@ public class AccountServiceMain {
     final Microservices seed;
     if (info.seedAddress() != null) {
       seed = Microservices.builder()
-          .services(new RedisAccountService(info.redisClient()))
+          .services(RedisAccountService.builder().redisson(info.redisClient()).build())
           .seeds(info.seedAddress()).build();
     } else {
       seed = Microservices.builder()
-          .services(new RedisAccountService(info.redisClient()))
+          .services(RedisAccountService.builder().redisson(info.redisClient()).build())
           .build();
     }
 

@@ -3,7 +3,7 @@ package io.scalecube.account.tokens;
 import io.scalecube.account.api.Token;
 import io.scalecube.account.api.User;
 
-public class MockTokenVerification implements TokenVerifier{
+public class MockTokenVerification implements TokenVerifier {
 
   private User user;
 
@@ -15,6 +15,6 @@ public class MockTokenVerification implements TokenVerifier{
   public User verify(Token token) throws Exception {
     return user;
   }
-  
+
 }
 

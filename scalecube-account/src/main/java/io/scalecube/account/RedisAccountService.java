@@ -61,41 +61,41 @@ public class RedisAccountService implements AccountService {
   private final TokenVerifier tokenVerifier;
 
   public static class Builder {
-    
+
     private RedissonClient redisson;
     private User user;
-  
-    public Builder redisson(RedissonClient redisson){
+
+    public Builder redisson(RedissonClient redisson) {
       this.redisson = redisson;
       return this;
     }
-    
+
     public Builder mock(User user) {
-      this.user  = user;
+      this.user = user;
       return this;
     }
-    
+
     public RedisAccountService build() {
       TokenVerifier tokenVerifier = null;
-      if(user==null){
+      if (user == null) {
         tokenVerifier = new TokenVerification(new RedisOrganizations(redisson));
       } else {
         tokenVerifier = new MockTokenVerification(user);
       }
-      return new RedisAccountService(new RedisOrganizations(redisson),tokenVerifier);
+      return new RedisAccountService(new RedisOrganizations(redisson), tokenVerifier);
     }
-    
+
   }
-  
-  public static Builder builder(){
-    return new Builder(); 
+
+  public static Builder builder() {
+    return new Builder();
   }
-  
+
   private RedisAccountService(RedisOrganizations accountManager, TokenVerifier tokenVerifier) {
     this.accountManager = accountManager;
     this.tokenVerifier = tokenVerifier;
   }
-  
+
   @Override
   public CompletableFuture<User> register(final Token token) {
     CompletableFuture<User> future = new CompletableFuture<>();

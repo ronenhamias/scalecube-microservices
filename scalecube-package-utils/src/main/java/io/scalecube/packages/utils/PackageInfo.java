@@ -1,19 +1,32 @@
-package io.scalecube.gateway.all;
+package io.scalecube.packages.utils;
+
+import io.scalecube.transport.Address;
+
+import org.redisson.Redisson;
+import org.redisson.api.RedissonClient;
+import org.redisson.config.Config;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.management.ManagementFactory;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
-public class Info {
+/**
+ * Information provider about the environment and the package of this instance.
+ *
+ */
+public class PackageInfo {
 
   private final Properties properties = new Properties();
 
   /**
    * Runtime Environment information provider.
    */
-  public Info() {
+  public PackageInfo() {
     if (System.getenv("SC_HOME") != null) {
       String path = System.getenv("SC_HOME");
 
@@ -25,7 +38,7 @@ public class Info {
         defaultProps();
       }
     } else {
-      InputStream stream = Info.class.getResourceAsStream("package.properties");
+      InputStream stream = PackageInfo.class.getResourceAsStream("package.properties");
       if (stream != null) {
         try {
           properties.load(stream);
@@ -77,13 +90,35 @@ public class Info {
    * resolves redis address.
    */
   public String redisAddress() {
-    String address = getVariable("REDIS_HOST", "localhost");
-    String port = getVariable("REDIS_PORT", "6379");
+    return getVariable("REDIS_ADDRESS", "redis://localhost:6379");
+  }
 
-    System.out.println("ENV - REDIS HOST: " + address);
-    System.out.println("ENV - REDIS PORT: " + port);
+  /**
+   * Returns API Gateway API.
+   */
+  public int gatewayPort() {
+    String port = getVariable("API_GATEWAY_PORT", "8081");
+    return Integer.valueOf(port);
+  }
 
-    return "redis://" + address + ":" + port;
+  /**
+   * Resolve seed address from environment variable or system property.
+   * 
+   * @return seed address as string for example localhost:4801.
+   */
+  public Address[] seedAddress() {
+    String list = getVariable("SC_SEED_ADDRESS", null);
+    if (list != null && !list.isEmpty()) {
+      String[] hosts = list.split(",");
+      List<Address> seedList = Arrays.asList(hosts).stream().filter(predicate -> !predicate.isEmpty())
+          .map(mapper -> mapper.trim())
+          .map(hostAndPort -> {
+            return Address.from(hostAndPort);
+          }).collect(Collectors.toList());
+      return seedList.toArray(new Address[seedList.size()]);
+    } else {
+      return null;
+    }
   }
 
   private String getVariable(String name, String defaultValue) {
@@ -95,4 +130,21 @@ public class Info {
     }
     return defaultValue;
   }
+
+  /**
+   * Resolve redis client configuration and return a client.
+   * @return RedissonClient to connect to redis server.
+   */
+  public RedissonClient redisClient() {
+    Config config = new Config();
+    config.useSingleServer()
+        .setAddress(redisAddress())
+        .setConnectionPoolSize(10);
+
+    RedissonClient client = Redisson.create(config);
+    return client;
+  }
+
+
+
 }

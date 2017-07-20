@@ -72,28 +72,31 @@
 		<module>scalecube-configuration-gateway</module>
 		<module>scalecube-gateway-all</module>
 		<module>scalecube-gateway</module>
+		<module>scalecube-seed</module>
+		<module>scalecube-package-utils</module>
+		<module>scalecube-webapp-example</module>
 	</modules>
 
-	
-		<dependencies>
-			<dependency>
-				<groupId>io.scalecube</groupId>
-				<artifactId>scalecube-services</artifactId>
-				<version>1.0.4</version>
-			</dependency>
-			<dependency>
-				<groupId>org.redisson</groupId>
-				<artifactId>redisson</artifactId>
-				<version>3.4.3</version>
-			</dependency>
-			<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core -->
-			<dependency>
-				<groupId>com.fasterxml.jackson.core</groupId>
-				<artifactId>jackson-databind</artifactId>
-				<version>2.7.6</version>
-			</dependency>
-		</dependencies>
-	
+
+	<dependencies>
+		<dependency>
+			<groupId>io.scalecube</groupId>
+			<artifactId>scalecube-services</artifactId>
+			<version>1.0.4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.redisson</groupId>
+			<artifactId>redisson</artifactId>
+			<version>3.4.3</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.7.6</version>
+		</dependency>
+	</dependencies>
+
 
 	<build>
 		<plugins>

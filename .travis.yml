@@ -1,9 +1,12 @@
 language: java
+sudo: required
+
 jdk:
 - oraclejdk8
 
 services:
   - redis-server
+  - docker
   
 notifications:
   email: false
@@ -23,3 +26,12 @@ after_success:
   - java -cp ~/codacy-coverage-reporter-assembly-latest.jar com.codacy.CodacyCoverageReporter -l Java -r ./scalecube-configuration/target/site/jacoco/jacoco.xml
   - java -cp ~/codacy-coverage-reporter-assembly-latest.jar com.codacy.CodacyCoverageReporter -l Java -r ./scalecube-configuration-gateway/target/site/jacoco/jacoco.xml
   - java -cp ~/codacy-coverage-reporter-assembly-latest.jar com.codacy.CodacyCoverageReporter -l Java -r ./scalecube-gateway-all/target/site/jacoco/jacoco.xml
+  
+  - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
+  - bash docker_build.sh $DOCKER_USERNAME $TRAVIS_BUILD_DIR scalecube-seed
+  - bash docker_build.sh $DOCKER_USERNAME $TRAVIS_BUILD_DIR scalecube-gateway-all
+  - bash docker_build.sh $DOCKER_USERNAME $TRAVIS_BUILD_DIR scalecube-configuration-gateway
+  - bash docker_build.sh $DOCKER_USERNAME $TRAVIS_BUILD_DIR scalecube-configuration
+  - bash docker_build.sh $DOCKER_USERNAME $TRAVIS_BUILD_DIR scalecube-account-gateway
+  - bash docker_build.sh $DOCKER_USERNAME $TRAVIS_BUILD_DIR scalecube-account
+  

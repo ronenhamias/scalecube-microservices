@@ -1,14 +1,18 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
-
 	<parent>
 		<groupId>io.scalecube</groupId>
 		<artifactId>configuration-parent</artifactId>
 		<version>0.0.5-SNAPSHOT</version>
 	</parent>
-	<artifactId>scalecube-account</artifactId>
-	<name>scalecube-account</name>
+
+	<artifactId>scalecube-seed</artifactId>
+
+	<name>scalecube-seed</name>
+
 	<url>http://maven.apache.org</url>
 
 	<properties>
@@ -18,29 +22,9 @@
 	<dependencies>
 		<dependency>
 			<groupId>io.scalecube</groupId>
-			<artifactId>scalecube-account-api</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>io.scalecube</groupId>
 			<artifactId>scalecube-package-utils</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt -->
-		<dependency>
-			<groupId>io.jsonwebtoken</groupId>
-			<artifactId>jjwt</artifactId>
-			<version>0.2</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.google.api-client</groupId>
-			<artifactId>google-api-client</artifactId>
-			<version>1.22.0</version>
-		</dependency>
-
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -48,7 +32,9 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+
 	<build>
+
 		<finalName>server</finalName>
 
 		<plugins>
@@ -68,7 +54,7 @@
 						<manifest>
 							<addClasspath>true</addClasspath>
 							<classpathPrefix>lib/</classpathPrefix>
-							<mainClass>io.scalecube.account.service.bootstrap.AccountServiceMain</mainClass>
+							<mainClass>io.scalecube.seed.Server</mainClass>
 						</manifest>
 					</archive>
 				</configuration>

@@ -44,6 +44,7 @@ public class ApiGateway {
       this.url = url;
     }
 
+
     /**
      * Builder mapping http request to target service method name.
      * 
@@ -53,7 +54,7 @@ public class ApiGateway {
     public Builder to(String methodName) {
       On.port(builder.port).route(this.action, this.url).plain(req -> {
         req.async();
-
+        req.response().header("Access-Control-Allow-Origin", req.header("Origin"));
         Method method = builder.serviceMethods.get(methodName);
 
         Object result = null;
@@ -70,6 +71,7 @@ public class ApiGateway {
           future.whenComplete((success, error) -> {
             if (success != null) {
               try {
+
                 IO.write(req.response().out(), mapper.writeValueAsBytes(success));
                 req.done();
               } catch (JsonProcessingException e) {
@@ -113,6 +115,27 @@ public class ApiGateway {
 
     public Builder port(int port) {
       this.port = port;
+      return this;
+    }
+
+    /**
+     * enable CORS, cross origin resource sharing.
+     * 
+     * @return builder.
+     */
+    public Builder crossOriginResourceSharing() {
+      On.port(this.port).route("OPTIONS", "/*").plain(req -> {
+        req.async();
+
+        req.response().header("Access-Control-Allow-Origin", req.header("Origin"));
+        req.response().header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+        req.response().header("Access-Control-Allow-Headers", " Origin, Content-Type");
+
+        req.response().code(200);
+        IO.write(req.response().out(), "");
+        req.done();
+        return req;
+      });
       return this;
     }
 

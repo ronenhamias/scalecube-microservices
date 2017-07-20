@@ -10,7 +10,7 @@ import io.scalecube.configuration.api.FetchRequest;
 import io.scalecube.configuration.api.FetchResponse;
 import io.scalecube.configuration.api.InvalidPermissionsException;
 import io.scalecube.configuration.api.SaveRequest;
-import io.scalecube.configuration.db.RedisStore;
+import io.scalecube.configuration.db.redis.RedisStore;
 import io.scalecube.services.annotations.ServiceProxy;
 
 import org.redisson.api.RedissonClient;

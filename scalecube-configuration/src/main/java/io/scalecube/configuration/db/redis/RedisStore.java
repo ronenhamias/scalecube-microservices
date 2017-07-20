@@ -1,4 +1,4 @@
-package io.scalecube.configuration.db;
+package io.scalecube.configuration.db.redis;
 
 import org.redisson.api.RedissonClient;
 

@@ -8,9 +8,7 @@ import io.scalecube.packages.utils.Logo;
 import io.scalecube.packages.utils.PackageInfo;
 import io.scalecube.services.Microservices;
 
-import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
-import org.redisson.config.Config;
 
 import java.io.IOException;
 

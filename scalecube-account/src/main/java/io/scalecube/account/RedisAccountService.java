@@ -75,6 +75,11 @@ public class RedisAccountService implements AccountService {
       return this;
     }
 
+    /**
+     * build a Service instance.
+     * 
+     * @return new initialzed service instance.
+     */
     public RedisAccountService build() {
       TokenVerifier tokenVerifier = null;
       if (user == null) {

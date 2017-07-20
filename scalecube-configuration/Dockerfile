@@ -11,7 +11,7 @@ COPY target/maven-archiver/pom.properties                   /usr/dev/root/packag
 COPY target/server.jar                                      /usr/dev/root/server.jar
 
 # Cluster control port and communication port.
-EXPOSE 4801 4802 8081
+EXPOSE 4801 4802
 
 ###################################################################
 # Environment Variables:

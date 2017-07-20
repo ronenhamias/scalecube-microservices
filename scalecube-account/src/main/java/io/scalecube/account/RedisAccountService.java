@@ -39,7 +39,9 @@ import io.scalecube.account.api.User;
 import io.scalecube.account.db.RedisOrganizations;
 import io.scalecube.account.tokens.IdGenerator;
 import io.scalecube.account.tokens.JwtApiKey;
+import io.scalecube.account.tokens.MockTokenVerification;
 import io.scalecube.account.tokens.TokenVerification;
+import io.scalecube.account.tokens.TokenVerifier;
 
 import com.google.common.collect.Lists;
 
@@ -56,14 +58,44 @@ public class RedisAccountService implements AccountService {
 
   private final RedisOrganizations accountManager;
 
-  private final TokenVerification tokenVerifier;
+  private final TokenVerifier tokenVerifier;
 
-
-  public RedisAccountService(RedissonClient redisson) {
-    accountManager = new RedisOrganizations(redisson);
-    tokenVerifier = new TokenVerification(accountManager);
+  public static class Builder {
+    
+    private RedissonClient redisson;
+    private User user;
+  
+    public Builder redisson(RedissonClient redisson){
+      this.redisson = redisson;
+      return this;
+    }
+    
+    public Builder mock(User user) {
+      this.user  = user;
+      return this;
+    }
+    
+    public RedisAccountService build() {
+      TokenVerifier tokenVerifier = null;
+      if(user==null){
+        tokenVerifier = new TokenVerification(new RedisOrganizations(redisson));
+      } else {
+        tokenVerifier = new MockTokenVerification(user);
+      }
+      return new RedisAccountService(new RedisOrganizations(redisson),tokenVerifier);
+    }
+    
   }
-
+  
+  public static Builder builder(){
+    return new Builder(); 
+  }
+  
+  private RedisAccountService(RedisOrganizations accountManager, TokenVerifier tokenVerifier) {
+    this.accountManager = accountManager;
+    this.tokenVerifier = tokenVerifier;
+  }
+  
   @Override
   public CompletableFuture<User> register(final Token token) {
     CompletableFuture<User> future = new CompletableFuture<>();

@@ -30,8 +30,39 @@ public class RedisConfigurationService implements ConfigurationService {
 
   private final RedisStore<Document> store;
 
-  public RedisConfigurationService(RedissonClient client) {
-    store = new RedisStore<Document>(client);
+  public static class Builder {
+
+    private RedissonClient redisson;
+    private AccountService accountService;
+
+    public Builder redisson(RedissonClient redisson) {
+      this.redisson = redisson;
+      return this;
+    }
+
+    public Builder mock(AccountService accountService) {
+      this.accountService = accountService;
+      return this;
+    }
+
+    /**
+     * build a Service instance.
+     * 
+     * @return new initialzed service instance.
+     */
+    public RedisConfigurationService build() {
+      return new RedisConfigurationService(new RedisStore<Document>(redisson), accountService);
+    }
+
+  }
+  
+  public static Builder builder() {
+    return new Builder();
+  }
+  
+  private RedisConfigurationService(RedisStore<Document> store, AccountService accountService) {
+    this.store = store;
+    this.accountService = accountService;
   }
 
   private enum Permissions {

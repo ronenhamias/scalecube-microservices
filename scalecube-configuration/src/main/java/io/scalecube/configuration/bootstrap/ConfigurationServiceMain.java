@@ -15,8 +15,10 @@ public class ConfigurationServiceMain {
   public static void main(String[] args) {
 
     PackageInfo info = new PackageInfo();
-    
-    RedisConfigurationService service = new RedisConfigurationService(info.redisClient());
+
+    RedisConfigurationService service = RedisConfigurationService.builder()
+        .redisson(info.redisClient())
+        .build();
 
     Microservices seed = Microservices.builder()
         .seeds(info.seedAddress())

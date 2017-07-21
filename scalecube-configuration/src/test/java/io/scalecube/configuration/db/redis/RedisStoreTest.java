@@ -17,14 +17,14 @@ public class RedisStoreTest extends BaseTest {
   @Test
   public void test_put_get() {
     store.put("test_put_get", "key1", "1");
-    String value = store.get("test_get", "key1");
-    assertEquals(value, "1");
+    String value = store.get("test_put_get", "key1");
+    assertEquals("1", value);
   }
 
   @Test
   public void test_entries() {
     store.put("test_entries", "key1", "1");
-    Collection<String> value = store.entries("test_get");
+    Collection<String> value = store.entries("test_entries");
     assertTrue(value.size() > 0);
   }
 

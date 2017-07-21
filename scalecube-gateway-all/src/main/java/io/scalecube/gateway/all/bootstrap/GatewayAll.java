@@ -28,7 +28,7 @@ public class GatewayAll {
 
     Microservices seed = Microservices.builder().seeds(info.seedAddress())
         .services(RedisAccountService.builder().redisson(client).build(),
-            new RedisConfigurationService(client))
+            RedisConfigurationService.builder().redisson(client).build())
         .build();
 
     AccountGatewayMain.start(info.gatewayPort(), seed);

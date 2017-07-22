@@ -19,6 +19,13 @@ public class SaveRequest implements AccessRequest {
     this.value = value;
   }
 
+  public SaveRequest(Token token, String collection, String key, JsonNode value) {
+    this.token = token;
+    this.collection = collection;
+    this.key = key;
+    this.value = value;
+  }
+
   public Token token() {
     return this.token;
   }

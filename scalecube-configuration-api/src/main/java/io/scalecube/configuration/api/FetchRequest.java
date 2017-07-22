@@ -17,6 +17,12 @@ public class FetchRequest implements AccessRequest {
     this.key = key;
   }
 
+  public FetchRequest(Token token, String collection, String key) {
+    this.token = token;
+    this.collection = collection;
+    this.key = key;
+  }
+
   public String collection() {
     return collection;
   }

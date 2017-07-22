@@ -63,16 +63,17 @@
 	</properties>
 
 	<modules>
-		<module>scalecube-account</module>
+		<module>scalecube-seed</module>
 		<module>scalecube-account-api</module>
-		<module>scalecube-account-gateway</module>
-		<module>scalecube-configuration</module>
 		<module>scalecube-configuration-api</module>
+		<module>scalecube-package-utils</module>
+		<module>scalecube-test-utils</module>
+		<module>scalecube-gateway</module>
+		<module>scalecube-configuration</module>
+		<module>scalecube-account</module>
+		<module>scalecube-account-gateway</module>
 		<module>scalecube-configuration-gateway</module>
 		<module>scalecube-gateway-all</module>
-		<module>scalecube-gateway</module>
-		<module>scalecube-seed</module>
-		<module>scalecube-package-utils</module>
 		<module>scalecube-webapp-example</module>
 	</modules>
 
@@ -99,6 +100,7 @@
 			<artifactId>scalecube-testlib</artifactId>
 			<version>1.0.4</version>
 		</dependency>
+		
 	</dependencies>
 
 

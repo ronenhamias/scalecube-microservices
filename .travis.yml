@@ -18,15 +18,9 @@ before_install:
   - wget -O ~/codacy-coverage-reporter-assembly-latest.jar $(curl https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/latest | jq -r .assets[0].browser_download_url)
 
 after_success:
-  - bash <(curl -s https://codecov.io/bash) -t a6d36061-7980-4ff6-884b-0311e4d4fc22
-  - java -cp ~/codacy-coverage-reporter-assembly-latest.jar com.codacy.CodacyCoverageReporter -l Java -r ./scalecube-account-api/target/site/jacoco/jacoco.xml
   - java -cp ~/codacy-coverage-reporter-assembly-latest.jar com.codacy.CodacyCoverageReporter -l Java -r ./scalecube-account/target/site/jacoco/jacoco.xml
-  - java -cp ~/codacy-coverage-reporter-assembly-latest.jar com.codacy.CodacyCoverageReporter -l Java -r ./scalecube-gateway/target/site/jacoco/jacoco.xml
-  - java -cp ~/codacy-coverage-reporter-assembly-latest.jar com.codacy.CodacyCoverageReporter -l Java -r ./scalecube-configuration-api/target/site/jacoco/jacoco.xml
   - java -cp ~/codacy-coverage-reporter-assembly-latest.jar com.codacy.CodacyCoverageReporter -l Java -r ./scalecube-configuration/target/site/jacoco/jacoco.xml
-  - java -cp ~/codacy-coverage-reporter-assembly-latest.jar com.codacy.CodacyCoverageReporter -l Java -r ./scalecube-configuration-gateway/target/site/jacoco/jacoco.xml
-  - java -cp ~/codacy-coverage-reporter-assembly-latest.jar com.codacy.CodacyCoverageReporter -l Java -r ./scalecube-gateway-all/target/site/jacoco/jacoco.xml
-
+  
 deploy:
   provider: script
   script: bash deploy.sh

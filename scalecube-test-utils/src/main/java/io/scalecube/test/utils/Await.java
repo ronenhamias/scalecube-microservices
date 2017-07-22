@@ -14,10 +14,19 @@ public class Await<T> {
       this.latch = new CountDownLatch(counts);
     }
 
-    public void timeout(int timeout, TimeUnit timeUnit) {
+    /**
+     * return true if timeout has reached.
+     * 
+     * @param timeout amount of time to wait.
+     * @param timeUnit time unit to wait.
+     * @return true if timeout has reached/
+     */
+    public boolean timeout(int timeout, TimeUnit timeUnit) {
       try {
         this.latch.await(timeout, timeUnit);
+        return false;
       } catch (Exception ex) {
+        return true;
       }
     }
 

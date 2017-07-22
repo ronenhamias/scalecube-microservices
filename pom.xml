@@ -99,6 +99,7 @@
 			<artifactId>scalecube-testlib</artifactId>
 			<version>1.0.4</version>
 		</dependency>
+		
 	</dependencies>
 
 

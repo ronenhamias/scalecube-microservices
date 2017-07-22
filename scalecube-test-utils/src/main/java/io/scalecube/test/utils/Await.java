@@ -30,14 +30,14 @@ public class Await<T> {
       this.countDown();
     }
 
-    public Object result(){
+    public Object result() {
       return this.result;
     }
-    
-    public Object error(){
+
+    public Object error() {
       return this.error;
     }
-    
+
     public void error(Throwable error) {
       this.error = error;
       this.countDown();

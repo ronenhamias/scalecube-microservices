@@ -11,6 +11,12 @@ public class DeleteRequest implements AccessRequest {
   private String key;
   
   
+  public DeleteRequest(Token token, String collection, String key) {
+    this.token = token;
+    this.collection = collection;
+    this.key = key;
+  }
+
   public Token token() {  
     return token;
   }

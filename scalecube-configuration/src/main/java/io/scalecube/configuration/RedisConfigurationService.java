@@ -14,6 +14,8 @@ import io.scalecube.configuration.db.redis.RedisStore;
 import io.scalecube.services.annotations.ServiceProxy;
 
 import org.redisson.api.RedissonClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.List;
@@ -24,7 +26,8 @@ import java.util.stream.Collectors;
 public class RedisConfigurationService implements ConfigurationService {
 
   private static final String PERMISSIONS_LEVEL = "permissions-level";
-
+  private static final Logger LOGGER = LoggerFactory.getLogger(RedisConfigurationService.class);
+  
   @ServiceProxy
   private AccountService accountService;
 
@@ -71,6 +74,8 @@ public class RedisConfigurationService implements ConfigurationService {
 
   @Override
   public CompletableFuture<FetchResponse> fetch(final FetchRequest request) {
+    
+    LOGGER.debug("recived fetch request {}",request);
     final CompletableFuture<FetchResponse> future = new CompletableFuture<>();
     accountService.register(request.token()).whenComplete((success, error) -> {
       if (error == null) {

@@ -1,4 +1,4 @@
-FROM anapsix/alpine-java:8_jdk
+FROM openjdk:8-jdk
 MAINTAINER info@scalecube.io
 
 # Add Maven dependencies (not shaded into the artifact; Docker-cached)

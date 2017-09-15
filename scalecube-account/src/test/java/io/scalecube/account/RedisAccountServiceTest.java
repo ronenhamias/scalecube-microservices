@@ -67,7 +67,6 @@ public class RedisAccountServiceTest extends BaseTest {
     assertNotNull(await.result());
   }
 
-
   @Test
   public void testGetOrganizationDetails() throws Exception {
     AwaitLatch<GetMembershipResponse> await = Await.one();

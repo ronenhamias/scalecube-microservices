@@ -97,7 +97,7 @@ public class RedisConfigurationServiceTest extends BaseTest {
   @Test
   public void testSaveEntries() {
     AwaitLatch<FetchResponse[]> latch = Await.one();
-
+    
     JsonNode json = mapper.valueToTree("1");
 
     service.save(new SaveRequest(token, "collection1", "key1", json))

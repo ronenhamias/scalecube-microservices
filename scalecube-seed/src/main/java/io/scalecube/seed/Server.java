@@ -1,9 +1,13 @@
 package io.scalecube.seed;
 
-import io.scalecube.cluster.membership.MembershipEvent;
+import io.scalecube.cluster.ClusterConfig;
+import io.scalecube.cluster.ClusterConfig.Builder;
+import io.scalecube.packages.utils.Cli;
 import io.scalecube.packages.utils.Logo;
 import io.scalecube.packages.utils.PackageInfo;
 import io.scalecube.services.Microservices;
+
+import java.util.HashMap;
 
 /**
  * Seed Node server.
@@ -20,12 +24,17 @@ public class Server {
     PackageInfo packageInfo = new PackageInfo();
     Microservices seed;
 
+    HashMap<String, String> map = new HashMap<>();
+    map.put("hostname", packageInfo.hostname());
+    map.put("type", "seed");
+    Builder conf = ClusterConfig.builder().metadata(map);
+
     if (packageInfo.seedAddress() == null) {
-      System.out.println("Seed Host and port not specified - running as standalone seed.");
-      seed = Microservices.builder().build();
+      Cli.prln("Seed Host and port not specified - running as standalone seed.");
+      seed = Microservices.builder().clusterConfig(conf).build();
     } else {
-      System.out.println("Seed Host and port specified - trying to join cluster: " + packageInfo.seedAddress());
-      seed = Microservices.builder().seeds(packageInfo.seedAddress()).build();
+      Cli.prln("Seed Host and port specified - trying to join cluster: " + packageInfo.seedAddress());
+      seed = Microservices.builder().clusterConfig(conf).seeds(packageInfo.seedAddress()).build();
     }
 
     Logo.builder().tagVersion(packageInfo.version())
@@ -37,34 +46,10 @@ public class Server {
         .javaVersion(packageInfo.java())
         .osType(packageInfo.os())
         .pid(packageInfo.pid())
+        .hostname(packageInfo.hostname())
         .website().draw();
 
-    seed.cluster().listenMembership().subscribe(onNext -> {
-      if (onNext.type().equals(MembershipEvent.Type.ADDED)) {
-        System.out
-            .println("** New Member Added **\n- id:" + onNext.member().id() + " address:" + onNext.member().address());
-      } else if (onNext.type().equals(MembershipEvent.Type.REMOVED)) {
-        System.out.println(
-            "** Member was Removed **\n- id:" + onNext.oldMember().id() + " address:" + onNext.oldMember().address());
-      } else if (onNext.type().equals(MembershipEvent.Type.UPDATED)) {
-        System.out
-            .println("** Member Updated **\n- id:" + onNext.member().id() + " address:" + onNext.member().address());
-      }
-      System.out.println("");
-      print(seed);
-    });
-    print(seed);
-  }
-
-  private static void print(Microservices seed) {
-    System.out.println("=========================================");
-    System.out.println("- Member id\t\t| Member Address");
-    System.out.println("=========================================");
-    seed.cluster().members().forEach(member -> {
-      System.out.print(member.id() + "\t| ");
-      System.out.print(member.address() + "\n");
-    });
-
-    System.out.println("");
+    Cli cli = new Cli(seed);
+    cli.start();
   }
 }

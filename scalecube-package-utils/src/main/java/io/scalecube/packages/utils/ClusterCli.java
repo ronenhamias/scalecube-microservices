@@ -24,6 +24,11 @@ public class ClusterCli {
     });
   }
 
+  /**
+   * listen on cluster membership events.
+   * 
+   * @param seed node to listen.
+   */
   public static void listen(Microservices seed) {
     seed.cluster().listenMembership().subscribe(onNext -> {
       if (onNext.type().equals(MembershipEvent.Type.ADDED)) {
@@ -38,6 +43,13 @@ public class ClusterCli {
     });
   }
 
+  /**
+   * execute commands.
+   * 
+   * @param seed member execute command upon.
+   * 
+   * @param line of the requested command.
+   */
   public static void command(Microservices seed, CommandLine line) {
     if (line.getArgs().length >= 2 && line.getArgs()[1].equals("ls")) {
       print(seed);
@@ -48,6 +60,9 @@ public class ClusterCli {
     }
   }
 
+  /**
+   * print commands help.
+   */
   public static void help() {
     Cli.prln("Usage:");
     Cli.prln("  cluster [option]   example:   cluster ls");

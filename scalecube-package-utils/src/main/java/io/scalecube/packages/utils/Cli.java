@@ -15,13 +15,16 @@ public class Cli {
   private Microservices microservices;
 
   public Cli(Microservices seed) {
-   this.microservices = seed;
+    this.microservices = seed;
   }
 
+  /**
+   * start cli.
+   */
   public void start() {
     // create the command line parser
     CommandLineParser parser = new DefaultParser();
-    
+
     // create the Options
     Options options = new Options();
     BufferedReader buffer = new BufferedReader(new InputStreamReader(System.in));
@@ -35,7 +38,7 @@ public class Cli {
           if (!line.getArgList().isEmpty() && line.getArgs()[0].equals("cluster")) {
             ClusterCli.command(microservices, line);
           }
-          
+
         } else {
           Cli.prln("cluster member is shutting down...");
           microservices.shutdown().get();
@@ -43,20 +46,24 @@ public class Cli {
           System.exit(0);
         }
       } catch (Exception e) {
-
+        System.out.println(e.getMessage());
       }
     }
   }
 
 
-
+  /**
+   * print string.
+   * 
+   * @param line to print out.
+   */
   public static void pr(String line) {
     System.out.print(line);
   }
 
-  public static String tab(int j) {
+  public static String tab(int index) {
     StringBuilder builder = new StringBuilder("\t");
-    for (int i = 0; i < j; i++) {
+    for (int i = 0; i < index; i++) {
       builder.append("\t");
     }
     return builder.toString();

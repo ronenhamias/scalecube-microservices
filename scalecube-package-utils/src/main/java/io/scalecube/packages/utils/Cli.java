@@ -43,7 +43,7 @@ public class Cli {
           Cli.prln("cluster member is shutting down...");
           microservices.shutdown().get();
           Cli.prln("Good bye");
-          System.exit(0);
+          break;
         }
       } catch (Exception e) {
         System.out.println(e.getMessage());

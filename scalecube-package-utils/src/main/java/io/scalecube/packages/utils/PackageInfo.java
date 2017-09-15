@@ -88,7 +88,7 @@ public class PackageInfo {
    */
   public String hostname() {
     String result = getVariable("HOSTNAME", "unknown");
-    if (result.equals("unknown")) {
+    if ("unknown".equals(result)) {
       return getHostName("unknown");
     } else {
       return result;

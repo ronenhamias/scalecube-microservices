@@ -9,7 +9,7 @@ build(){
   docker build -t $ARTIFACT:$ARTIFACT .
   docker images
   docker tag $ARTIFACT:$ARTIFACT $DOCKER_NAMESPACE/$DOCKER_REPO:$ARTIFACT-$MVN_VERSION
-  docker push $USERNAME/scalecube:$ARTIFACT-$MVN_VERSION
+  docker push $DOCKER_NAMESPACE/$DOCKER_REPO:$ARTIFACT-$MVN_VERSION
   cd $BUILD_DIR
 }
 

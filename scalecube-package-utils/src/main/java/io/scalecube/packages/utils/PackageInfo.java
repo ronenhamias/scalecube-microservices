@@ -81,6 +81,11 @@ public class PackageInfo {
     return System.getProperty("os.name");
   }
 
+  /**
+   * returns host name of the current running host.
+   * 
+   * @return host name.
+   */
   public String hostname() {
     String result = getVariable("HOSTNAME", "unknown");
     if (result.equals("unknown")) {

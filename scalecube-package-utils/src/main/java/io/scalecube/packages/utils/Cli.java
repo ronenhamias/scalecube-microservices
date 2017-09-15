@@ -61,6 +61,12 @@ public class Cli {
     System.out.print(line);
   }
 
+  /**
+   * append tab for current index.
+   * 
+   * @param index to append tab from;
+   * @return String appended with tab.
+   */
   public static String tab(int index) {
     StringBuilder builder = new StringBuilder("\t");
     for (int i = 0; i < index; i++) {

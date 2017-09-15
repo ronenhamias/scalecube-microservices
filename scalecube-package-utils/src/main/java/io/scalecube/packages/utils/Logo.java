@@ -68,6 +68,11 @@ public class Logo {
       return this;
     }
 
+    public Builder hostname(String value) {
+      headers.put(startAt + headers.size() + 1, new LogoHeader("Host Name: #1".replaceAll("#1", value)));
+      return this;
+    }
+
     public Builder website() {
       headers.put(startAt + headers.size() + 2, new LogoHeader("      http://scalecube.io"));
       return this;

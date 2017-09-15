@@ -28,6 +28,12 @@
 			<version>${project.version}</version>
 		</dependency>
 
+		<dependency>
+			<groupId>io.scalecube</groupId>
+			<artifactId>scalecube-test-utils</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
 		<!-- https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt -->
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>

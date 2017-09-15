@@ -10,8 +10,8 @@
 <body>
 <div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
 <script>
-	var accountEndpoint = "http://localhost:8082";
-	var configurationEndpoint = "http://localhost:8081";
+	var accountEndpoint = "http://ec2-52-51-251-169.eu-west-1.compute.amazonaws.com:8081";
+	var configurationEndpoint = "http://ec2-52-51-251-169.eu-west-1.compute.amazonaws.com:8082";
 	
     var xhr = new XMLHttpRequest();   // new HttpRequest instance
 	
@@ -28,7 +28,7 @@
 		            console.log(xhr.response);
 		            responseJson = JSON.parse(xhr.response); 
 		            document.write("<pre style='position: static;border: 2px solid #000916;'>Response:</pre>");
-		            document.write("<pre style='color:green;position: static;border: 2px solid #000916;'><code>"+JSON.stringify(responseJson, undefined, 2)+"</code></pre>");
+		            document.write("<pre style='colotopr:green;position: static;border: 2px solid #000916;'><code>"+JSON.stringify(responseJson, undefined, 2)+"</code></pre>");
 		        }
 		        
 	    	};

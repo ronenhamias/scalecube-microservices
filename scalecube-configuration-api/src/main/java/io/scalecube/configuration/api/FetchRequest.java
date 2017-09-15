@@ -4,6 +4,11 @@ import io.scalecube.account.api.Token;
 
 public class FetchRequest implements AccessRequest {
 
+  @Override
+  public String toString() {
+    return "FetchRequest [collection=" + collection + ", key=" + key + ", token=" + token + "]";
+  }
+
   protected String collection;
 
   protected String key;

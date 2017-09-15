@@ -130,11 +130,10 @@ public class ApiGateway {
         req.response().header("Access-Control-Allow-Origin", req.header("Origin"));
         req.response().header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
         req.response().header("Access-Control-Allow-Headers", " Origin, Content-Type");
-
         req.response().code(200);
+        
         IO.write(req.response().out(), "");
-        req.done();
-        return req;
+        return req.done();
       });
       return this;
     }

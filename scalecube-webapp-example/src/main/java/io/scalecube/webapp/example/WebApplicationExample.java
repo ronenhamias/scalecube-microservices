@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 
+
+
 public class WebApplicationExample {
 
   public static void main(String[] args) {

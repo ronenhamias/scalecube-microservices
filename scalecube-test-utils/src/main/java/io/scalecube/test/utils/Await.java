@@ -3,11 +3,11 @@ package io.scalecube.test.utils;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-public class Await<T> {
+public class Await {
 
-  public static class AwaitLatch {
+  public static class AwaitLatch<T> {
     private CountDownLatch latch;
-    private Object result;
+    private T result;
     private Throwable error;
 
     private AwaitLatch(int counts) {
@@ -34,13 +34,13 @@ public class Await<T> {
       latch.countDown();
     }
 
-    public void result(Object response) {
+    public void result(T response) {
       this.result = response;
       this.countDown();
     }
 
-    public Object result() {
-      return this.result;
+    public T result() {
+      return (T) this.result;
     }
 
     public Object error() {
@@ -53,7 +53,7 @@ public class Await<T> {
     }
   }
 
-  public static AwaitLatch one() {
-    return new AwaitLatch(1);
+  public static <T> AwaitLatch<T> one() {
+    return new AwaitLatch<>(1);
   }
 }

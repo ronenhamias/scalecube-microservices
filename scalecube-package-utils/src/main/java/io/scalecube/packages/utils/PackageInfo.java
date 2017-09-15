@@ -10,6 +10,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.management.ManagementFactory;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
@@ -79,6 +81,31 @@ public class PackageInfo {
     return System.getProperty("os.name");
   }
 
+  /**
+   * returns host name of the current running host.
+   * 
+   * @return host name.
+   */
+  public String hostname() {
+    String result = getVariable("HOSTNAME", "unknown");
+    if ("unknown".equals(result)) {
+      return getHostName("unknown");
+    } else {
+      return result;
+    }
+  }
+
+  private String getHostName(String defaultValue) {
+    String hostname = defaultValue;
+    try {
+      InetAddress addr = InetAddress.getLocalHost();
+      hostname = addr.getHostName();
+    } catch (UnknownHostException ex) {
+      hostname = defaultValue;
+    }
+    return hostname;
+  }
+
   public String pid() {
     String vmName = ManagementFactory.getRuntimeMXBean().getName();
     int pids = vmName.indexOf("@");
@@ -133,6 +160,7 @@ public class PackageInfo {
 
   /**
    * Resolve redis client configuration and return a client.
+   * 
    * @return RedissonClient to connect to redis server.
    */
   public RedissonClient redisClient() {

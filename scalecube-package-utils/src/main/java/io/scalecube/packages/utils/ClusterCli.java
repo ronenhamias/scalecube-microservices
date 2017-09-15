@@ -24,7 +24,7 @@ public class ClusterCli {
     });
   }
 
-  public static void listen(Microservices seed){
+  public static void listen(Microservices seed) {
     seed.cluster().listenMembership().subscribe(onNext -> {
       if (onNext.type().equals(MembershipEvent.Type.ADDED)) {
         System.out
@@ -37,12 +37,13 @@ public class ClusterCli {
       }
     });
   }
+
   public static void command(Microservices seed, CommandLine line) {
     if (line.getArgs().length >= 2 && line.getArgs()[1].equals("ls")) {
       print(seed);
     } else if (line.getArgs().length >= 2 && line.getArgs()[1].equals("listen")) {
-        listen(seed);
-    } else if ((line.getArgs().length==1) || (line.getArgs().length >= 2 && line.getArgs()[1].equals("help"))) {
+      listen(seed);
+    } else if ((line.getArgs().length == 1) || (line.getArgs().length >= 2 && line.getArgs()[1].equals("help"))) {
       help();
     }
   }

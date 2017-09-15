@@ -82,18 +82,18 @@ public class PackageInfo {
   }
 
   public String hostname() {
-     String result = getVariable("HOSTNAME", "unknown");
-     if(result.equals("unknown")){
-       return getHostName("unknown");
-     } else{
-       return result;
-     }
+    String result = getVariable("HOSTNAME", "unknown");
+    if (result.equals("unknown")) {
+      return getHostName("unknown");
+    } else {
+      return result;
+    }
   }
 
   private String getHostName(String defaultValue) {
     String hostname = defaultValue;
     try {
-      InetAddress addr= InetAddress.getLocalHost();
+      InetAddress addr = InetAddress.getLocalHost();
       hostname = addr.getHostName();
     } catch (UnknownHostException ex) {
       hostname = defaultValue;

@@ -1,6 +1,6 @@
 #!/bin/bash
 BUILD_DIR=$TRAVIS_BUILD_DIR
-ARTIFACT=$2
+ARTIFACT=$1
 
 build(){
   cd $BUILD_DIR/$ARTIFACT

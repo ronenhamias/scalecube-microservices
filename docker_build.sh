@@ -9,6 +9,8 @@ build(){
   DOCKER_IMAGE=$DOCKER_NAMESPACE/$DOCKER_REPO:$ARTIFACT-$MVN_VERSION
   echo "docker image: " $DOCKER_IMAGE
   echo "target/lib dir: " 
+  ls 
+  ls target
   ls target/lib
 
   docker image build -t $DOCKER_IMAGE .

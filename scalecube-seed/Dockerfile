@@ -1,14 +1,11 @@
 FROM anapsix/alpine-java:8_jdk
 MAINTAINER info@scalecube.io
 
-# Add Maven dependencies (not shaded into the artifact; Docker-cached)
-ADD target/lib                                             /usr/dev/root/lib
-
 # copy package information.
 ADD target/maven-archiver/pom.properties                   /usr/dev/root/package.properties
 
 # Add the service itself
-ADD target/server.jar                                      /usr/dev/root/server.jar
+ADD target/server-jar-with-dependencies.jar                                      /usr/dev/root/server.jar
 
 # Cluster control port and communication port.
 EXPOSE 4801 4802

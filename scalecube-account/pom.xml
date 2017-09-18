@@ -88,7 +88,7 @@
 				<version>${dockerfile-maven.version}</version>
 				<configuration>
 					<repository>${project.docker.repository}</repository>
-					<tag>${artifactId}-${project.version}</tag>
+					<tag>${project.artifactId}-${project.version}</tag>
 				</configuration>
 				<executions>
 					<execution>

@@ -20,11 +20,10 @@ before_install:
 after_success:
   - java -cp ~/codacy-coverage-reporter-assembly-latest.jar com.codacy.CodacyCoverageReporter -l Java -r ./scalecube-account/target/site/jacoco/jacoco.xml
   - java -cp ~/codacy-coverage-reporter-assembly-latest.jar com.codacy.CodacyCoverageReporter -l Java -r ./scalecube-configuration/target/site/jacoco/jacoco.xml
-  - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
 
 deploy:
   provider: script
-  script: mvn deploy
+  script: bash deploy.sh
   on:
     branch: master
     

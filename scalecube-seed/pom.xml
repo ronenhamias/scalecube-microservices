@@ -62,6 +62,7 @@
 					</archive>
 				</configuration>
 			</plugin>
+			
 			<!-- Copy Maven dependencies into target/lib/ -->
 			<plugin>
 				<artifactId>maven-dependency-plugin</artifactId>

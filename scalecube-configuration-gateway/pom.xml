@@ -62,7 +62,7 @@
 					<!-- MainClass in mainfest make a executable jar -->
 					<archive>
 					  <manifest>
-						<mainClass>io.scalecube.seed.Server</mainClass>
+						<mainClass>io.scalecube.server.Main</mainClass>
 					  </manifest>
 					</archive>
 

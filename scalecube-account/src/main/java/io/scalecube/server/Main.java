@@ -5,7 +5,7 @@ import io.scalecube.packages.utils.Logo;
 import io.scalecube.packages.utils.PackageInfo;
 import io.scalecube.services.Microservices;
 
-public class AccountServiceMain {
+public class Main {
 
   /**
    * AccountBootstrap main.

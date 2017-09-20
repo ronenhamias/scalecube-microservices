@@ -1,4 +1,5 @@
 FROM anapsix/alpine-java:8_jdk
+
 MAINTAINER info@scalecube.io
 
 # copy package information.

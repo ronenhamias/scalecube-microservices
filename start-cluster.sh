@@ -21,6 +21,9 @@ REDIS_IP=$(dockip) && echo "redis-ip: $REDIS_IP"
 docker run -d -t DOCKER_REPO:scalecube-seed-$VERSION
 
 SEED_IP=$(dockip) && echo "scalecube-seed-ip: $SEED_IP"
+echo $SEED_IP 
+
+SEED_IP=172.17.0.3
 
 docker run -d -e "SC_SEED_ADDRESS=$SEED_IP:4801" -t $DOCKER_REPO:scalecube-seed-$VERSION
 
@@ -32,4 +35,5 @@ docker run -d -e "SC_SEED_ADDRESS=$SEED_IP:4801" -p 8081:8081 -t $DOCKER_REPO:sc
 
 docker run -d -e "SC_SEED_ADDRESS=$SEED_IP:4801" -p 8082:8081 -t $DOCKER_REPO:scalecube-configuration-gateway-$VERSION
 
-#docker ps --filter "status=exited" | grep '1 days ago' | awk '{print $1}' | xargs --no-run-if-empty docker rm
+# docker ps --filter "status=exited" | grep '1 days ago' | awk '{print $1}' | xargs --no-run-if-empty docker rm
+# docker kill $(docker ps -qa)

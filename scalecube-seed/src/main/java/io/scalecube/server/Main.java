@@ -48,8 +48,10 @@ public class Main {
         .pid(packageInfo.pid())
         .hostname(packageInfo.hostname())
         .website().draw();
-
-    Cli cli = new Cli(seed);
-    cli.start();
+    
+    if (args.length > 0) {
+      Cli cli = new Cli(seed);
+      cli.start();
+    }
   }
 }

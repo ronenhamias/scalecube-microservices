@@ -80,55 +80,38 @@
 	<build>
 
 		<plugins>
-<!-- Copy Maven dependencies into target/lib/ -->
+			<!-- Copy Maven dependencies into target/lib/ -->
 			<!-- Maven Assembly Plugin -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>2.4.1</version>
 				<configuration>
-				 	<finalName>server</finalName>
+					<finalName>server</finalName>
 					<!-- get all project dependencies -->
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>
 					</descriptorRefs>
 					<!-- MainClass in mainfest make a executable jar -->
 					<archive>
-					  <manifest>
-						<mainClass>io.scalecube.server.Main</mainClass>
-					  </manifest>
+						<manifest>
+							<mainClass>io.scalecube.server.Main</mainClass>
+						</manifest>
 					</archive>
 
 				</configuration>
 				<executions>
-				  <execution>
-					<id>make-assembly</id>
-                                        <!-- bind to the packaging phase -->
-					<phase>package</phase>
-					<goals>
-						<goal>single</goal>
-					</goals>
-				  </execution>
-				</executions>
-			</plugin>
-			
-			<plugin>
-				<groupId>com.spotify</groupId>
-				<artifactId>dockerfile-maven-plugin</artifactId>
-				<version>${dockerfile-maven.version}</version>
-				<configuration>
-					<repository>${project.docker.repository}</repository>
-					<tag>${project.artifactId}-${project.version}</tag>
-				</configuration>
-				<executions>
 					<execution>
-						<id>default</id>
+						<id>make-assembly</id>
+						<!-- bind to the packaging phase -->
+						<phase>package</phase>
 						<goals>
-							<goal>build</goal>
+							<goal>single</goal>
 						</goals>
 					</execution>
 				</executions>
 			</plugin>
+
 			<!-- Use Java 8 -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -143,4 +126,35 @@
 		</plugins>
 	</build>
 
+	<profiles>
+		<profile>
+			<id>build-docker</id>
+			<activation>
+				<property>
+					<name>env.TRAVIS_BUILD_DIR</name>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>com.spotify</groupId>
+						<artifactId>dockerfile-maven-plugin</artifactId>
+						<version>${dockerfile-maven.version}</version>
+						<configuration>
+							<repository>${project.docker.repository}</repository>
+							<tag>${project.artifactId}-${project.version}</tag>
+						</configuration>
+						<executions>
+							<execution>
+								<id>default</id>
+								<goals>
+									<goal>build</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>

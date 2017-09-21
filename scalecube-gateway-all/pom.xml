@@ -131,7 +131,7 @@
 			<id>build-docker</id>
 			<activation>
 				<property>
-					<name>env.TRAVIS_BUILD_DIR</name>
+					<name>env.TRAVIS</name>
 				</property>
 			</activation>
 			<build>

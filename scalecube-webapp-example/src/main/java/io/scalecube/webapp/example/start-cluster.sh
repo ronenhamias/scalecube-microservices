@@ -1,32 +1,35 @@
 #!/bin/bash
-VERSION="0.0.5-SNAPSHOT"
 
-docker pull ronenna/scalecube:scalecube-seed-$VERSION
-docker pull ronenna/scalecube:scalecube-account-$VERSION
-docker pull ronenna/scalecube:scalecube-configuration-$VERSION
-docker pull ronenna/scalecube:scalecube-account-gateway-$VERSION
-docker pull ronenna/scalecube:scalecube-configuration-gateway-$VERSION
-docker pull ronenna/scalecube:scalecube-configuration-gateway-$VERSION
+DOCKER_REPO=scalecube/configuration
+VERSION=0.0.5-SNAPSHOT
+SEED_PORT=4802
 
+docker pull $DOCKER_REPO:scalecube-seed-0.0.5-SNAPSHOT
+docker pull $DOCKER_REPO:scalecube-account-0.0.5-SNAPSHOT
+docker pull $DOCKER_REPO:scalecube-configuration-0.0.5-SNAPSHOT
+docker pull $DOCKER_REPO:scalecube-account-gateway-0.0.5-SNAPSHOT
+docker pull $DOCKER_REPO:scalecube-configuration-gateway-0.0.5-SNAPSHOT
+docker pull $DOCKER_REPO:scalecube-configuration-gateway-0.0.5-SNAPSHOT
 
-function dockip() {
+dockip() {
   echo $(docker inspect --format '{{ .NetworkSettings.IPAddress }}' $(docker ps -aq | head -n1))
 }
 
+
+docker run -d -t DOCKER_REPO:scalecube-seed-$VERSION
+SEED_IP=$(dockip) && echo "scalecube-seed-ip: $SEED_IP"
+
 docker run -d -t redis
+REDIS_IP=$(dockip) && echo "redis-ip: $REDIS_IP"
 
-REDIS_IP=$(dockip) && echo "redis ip: $REDIS_IP"
+docker run -d -e "SC_SEED_ADDRESS=$SEED_IP:$SEED_PORT" -t $DOCKER_REPO:scalecube-seed-$VERSION
 
-docker run -d -t ronenna/scalecube:scalecube-seed-0.0.5-SNAPSHOT
+docker run -d -e "SC_SEED_ADDRESS=$SEED_IP:$SEED_PORT" -e "REDIS_ADDRESS=redis://$REDIS_IP:6379" -t $DOCKER_REPO:scalecube-account-$VERSION
 
-SEED_IP=$(dockip) && echo "seed ip: $SEED_IP"
+docker run -d -e "SC_SEED_ADDRESS=$SEED_IP:$SEED_PORT" -e "REDIS_ADDRESS=redis://$REDIS_IP:6379" -t $DOCKER_REPO:scalecube-configuration-$VERSION
 
-docker run -d -e "SC_SEED_ADDRESS=$SEED_IP:4801" -t ronenna/scalecube:scalecube-seed-$VERSION
+docker run -d -e "SC_SEED_ADDRESS=$SEED_IP:$SEED_PORT" -p 8081:8081 -t $DOCKER_REPO:scalecube-account-gateway-$VERSION
 
-docker run -d -e "SC_SEED_ADDRESS=$SEED_IP:4801" -e "REDIS_ADDRESS=redis://$REDIS_IP:6379" -t ronenna/scalecube:scalecube-account-$VERSION
+docker run -d -e "SC_SEED_ADDRESS=$SEED_IP:$SEED_PORT" -p 8082:8081 -t $DOCKER_REPO:scalecube-configuration-gateway-$VERSION
 
-docker run -d -e "SC_SEED_ADDRESS=$SEED_IP:4801" -e "REDIS_ADDRESS=redis://$REDIS_IP:6379" -t ronenna/scalecube:scalecube-configuration-$VERSION
-
-docker run -d -e "SC_SEED_ADDRESS=$SEED_IP:4801" -p 8081:8081 -t ronenna/scalecube:scalecube-account-gateway-$VERSION
-
-docker run -d -e "SC_SEED_ADDRESS=$SEED_IP:4801" -p 8082:8081 -t ronenna/scalecube:scalecube-configuration-gateway-$VERSION
+#docker ps --filter "status=exited" | grep '1 days ago' | awk '{print $1}' | xargs --no-run-if-empty docker rm

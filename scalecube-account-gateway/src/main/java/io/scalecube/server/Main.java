@@ -23,7 +23,7 @@ public class Main {
     } else {
       seed = Microservices.builder().build();
     }
-
+    
     start(info.gatewayPort(), seed);
 
     Logo.builder().tagVersion(info.version())

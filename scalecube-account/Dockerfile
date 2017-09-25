@@ -20,7 +20,7 @@ EXPOSE 4801 4802
 ###################################################################
 
 ENV SC_HOME="/usr/dev/root/" \
-    SC_SEED_ADDRESS="172.17.0.2:4801, 172.17.0.3:4801" \
+    SC_SEED_ADDRESS="172.17.0.2:4802, 172.17.0.3:4802, 172.17.0.4:4802" \
     REDIS_ADDRESS="redis://localhost:6379"
 
 ENTRYPOINT ["java", "-jar", "/usr/dev/root/server.jar"]

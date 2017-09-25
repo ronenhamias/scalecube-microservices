@@ -18,9 +18,12 @@ dockip() {
 
 docker run -d -t DOCKER_REPO:scalecube-seed-$VERSION
 SEED_IP=$(dockip) && echo "scalecube-seed-ip: $SEED_IP"
+echo "seed address: $SEED_IP:4802"
 
 docker run -d -t redis
 REDIS_IP=$(dockip) && echo "redis-ip: $REDIS_IP"
+echo "redis address: $REDIS_IP:6379i"
+
 
 docker run -d -e "SC_SEED_ADDRESS=$SEED_IP:$SEED_PORT" -t $DOCKER_REPO:scalecube-seed-$VERSION
 

@@ -11,18 +11,21 @@ docker pull $DOCKER_REPO:scalecube-account-gateway-0.0.5-SNAPSHOT
 docker pull $DOCKER_REPO:scalecube-configuration-gateway-0.0.5-SNAPSHOT
 docker pull $DOCKER_REPO:scalecube-configuration-gateway-0.0.5-SNAPSHOT
 
-dockip() {
-  echo $(docker inspect --format '{{ .NetworkSettings.IPAddress }}' $(docker ps -aq | head -n1))
+docker-ip() {
+  docker inspect --format '{{ .NetworkSettings.IPAddress }}' "$@"
 }
 
+docker-run() {
+  echo $(docker run -d "$@");
+}
 
-docker run -d -t DOCKER_REPO:scalecube-seed-$VERSION
-SEED_IP=$(dockip) && echo "scalecube-seed-ip: $SEED_IP"
+CID=$(docker-run $DOCKER_REPO:scalecube-seed-$VERSION)
+SEED_IP=$(docker-ip $CID)
 echo "seed address: $SEED_IP:4802"
 
-docker run -d -t redis
-REDIS_IP=$(dockip) && echo "redis-ip: $REDIS_IP"
-echo "redis address: $REDIS_IP:6379i"
+CID=$(docker-run redis)
+REDIS_IP=$(docker-ip $CID)
+echo "redis address: $REDIS_IP:6379"
 
 
 docker run -d -e "SC_SEED_ADDRESS=$SEED_IP:$SEED_PORT" -t $DOCKER_REPO:scalecube-seed-$VERSION

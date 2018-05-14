@@ -18,7 +18,6 @@ import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
@@ -32,6 +31,7 @@ public class RedisConfigurationService implements ConfigurationService {
 
   @Inject
   private Microservices microservices;
+
   private AccountService accountService;
 
   private final RedisStore<Document> store;
@@ -58,7 +58,7 @@ public class RedisConfigurationService implements ConfigurationService {
 
     /**
      * build a Service instance.
-     * 
+     *
      * @return new initialzed service instance.
      */
     public RedisConfigurationService build() {
@@ -66,11 +66,11 @@ public class RedisConfigurationService implements ConfigurationService {
     }
 
   }
-  
+
   public static Builder builder() {
     return new Builder();
   }
-  
+
   private RedisConfigurationService(RedisStore<Document> store, AccountService accountService) {
     this.store = store;
     this.accountService = accountService;
@@ -82,24 +82,10 @@ public class RedisConfigurationService implements ConfigurationService {
 
   @Override
   public Mono<FetchResponse> fetch(final FetchRequest request) {
-    
     LOGGER.debug("received fetch request {}", request);
-    return Mono.create(callback -> {
-      accountService.register(request.token()).whenComplete((success, error) -> {
-        if (error == null) {
-          final Document result = store.get(getCollectionName(request), request.key());
-          if (result != null) {
-            callback.success(FetchResponse.builder()
-                .key(result.key())
-                .value(result.value())
-                .build());
-          } else {
-            callback.success(FetchResponse.builder().build());
-          }
-        } else {
-          callback.error(error);
-        }
-      });
+    return accountService.register(request.token()).map(user -> {
+      final Document result = store.get(getCollectionName(request), request.key());
+      return result != null ? new FetchResponse(result.key(), result.value()) : FetchResponse.builder().build();
     });
   }
 
@@ -109,66 +95,48 @@ public class RedisConfigurationService implements ConfigurationService {
 
   @Override
   public Mono<Entries<FetchResponse>> entries(final FetchRequest request) {
-    return Mono.create(callback -> {
-      accountService.register(request.token()).whenComplete((success, error) -> {
-        if (error == null) {
-          final Collection<Document> result = store.entries(getCollectionName(request));
-          FetchResponse[] fetchResponses = result.stream()
-              .map(doc -> FetchResponse.builder()
-                  .key(doc.key())
-                  .value(doc.value())
-                  .build())
-              .toArray(FetchResponse[]::new);
-          callback.success(new Entries<>(fetchResponses));
-        } else {
-          callback.error(error);
-        }
-      });
+    return accountService.register(request.token()).map(user -> {
+      FetchResponse[] fetchResponses = store.entries(getCollectionName(request)).stream()
+          .map(doc -> FetchResponse.builder()
+              .key(doc.key())
+              .value(doc.value())
+              .build())
+          .toArray(FetchResponse[]::new);
+      return new Entries<>(fetchResponses);
     });
   }
 
   @Override
   public Mono<Acknowledgment> save(SaveRequest request) {
-    return Mono.create(callback -> {
-      accountService.register(request.token()).whenComplete((success, error) -> {
-        if (error == null) {
-          if (getPermissions(success.claims()).ordinal() >= Permissions.write.ordinal()) {
+    return accountService.register(request.token())
+        .flatMap(user -> {
+          if (getPermissions(user.claims()).ordinal() >= Permissions.write.ordinal()) {
             Document doc = Document.builder()
                 .key(request.key())
                 .value(request.value())
                 .build();
-
             store.put(getCollectionName(request), doc.key(), doc);
-            callback.success(new Acknowledgment());
+            return Mono.just(new Acknowledgment());
           } else {
-            callback.error(
-                new InvalidPermissionsException("invalid permissions-level save request requires write access"));
+            return Mono
+                .error(new InvalidPermissionsException("invalid permissions-level save request requires write access"));
           }
-        } else {
-          callback.error(error);
-        }
-      });
-    });
+        });
   }
 
 
   @Override
   public Mono<Acknowledgment> delete(DeleteRequest request) {
-    return Mono.create(callback -> {
-      accountService.register(request.token()).whenComplete((success, error) -> {
-        if (error == null) {
-          if (getPermissions(success.claims()).ordinal() >= Permissions.write.ordinal()) {
+    return accountService.register(request.token())
+        .flatMap(user -> {
+          if (getPermissions(user.claims()).ordinal() >= Permissions.write.ordinal()) {
             store.remove(getCollectionName(request), request.key());
-            callback.success(new Acknowledgment());
+            return Mono.just(new Acknowledgment());
           } else {
-            callback.error(
+            return Mono.error(
                 new InvalidPermissionsException("invalid permissions-level delete request requires write access"));
           }
-        } else {
-          callback.error(error);
-        }
-      });
-    });
+        });
   }
 
   private Permissions getPermissions(Map<String, String> claims) {

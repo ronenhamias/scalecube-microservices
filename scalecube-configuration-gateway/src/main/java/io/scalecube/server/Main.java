@@ -11,9 +11,8 @@ public class Main {
   /**
    * main bootstrap for Configuration Service.
    * @param args none.
-   * @throws Exception in case of error.
    */
-  public static void main(String[] args) throws Exception {
+  public static void main(String[] args) {
     PackageInfo info = new PackageInfo();
 
     final Microservices seed;
@@ -45,7 +44,7 @@ public class Main {
    * @param seed as access point to the cluster.
    */
   public static void start(int port, Microservices seed) {
-    ConfigurationService service = seed.proxy().api(ConfigurationService.class).create();
+    ConfigurationService service = seed.call().api(ConfigurationService.class);
     ApiGateway.builder().port(port)
         .instance(service).api(ConfigurationService.class)
         .crossOriginResourceSharing()

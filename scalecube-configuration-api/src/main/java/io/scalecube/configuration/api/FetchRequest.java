@@ -4,18 +4,14 @@ import io.scalecube.account.api.Token;
 
 public class FetchRequest implements AccessRequest {
 
-  @Override
-  public String toString() {
-    return "FetchRequest [collection=" + collection + ", key=" + key + ", token=" + token + "]";
-  }
-
   protected String collection;
-
   protected String key;
-
   private Token token;
 
-  public FetchRequest() {}
+  /**
+   * @deprecated only for serialization/deserialization
+   */
+  FetchRequest() {}
 
   public FetchRequest(String collection, String key) {
     this.collection = collection;
@@ -38,6 +34,11 @@ public class FetchRequest implements AccessRequest {
 
   public Token token() {
     return this.token;
+  }
+
+  @Override
+  public String toString() {
+    return "FetchRequest [collection=" + collection + ", key=" + key + ", token=" + token + "]";
   }
 
 }

@@ -39,7 +39,7 @@ public class Main {
 
     Logo.builder().tagVersion(packageInfo.version())
         .port(String.valueOf(seed.cluster().address().port()))
-        .header("Service Port: " + seed.sender().address().port())
+        .header("Service Port: " + seed.serviceAddress().port())
         .ip(seed.cluster().address().host())
         .group(packageInfo.groupId())
         .artifact(packageInfo.artifactId())

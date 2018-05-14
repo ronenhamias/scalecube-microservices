@@ -8,20 +8,17 @@ import io.scalecube.services.Microservices;
 
 import org.redisson.api.RedissonClient;
 
-import java.io.IOException;
-
 public class Main {
 
   /**
    * app main.
    * 
    * @param args application arguments.
-   * @throws IOException on error.
    */
-  public static void main(String[] args) throws IOException {
+  public static void main(String[] args) {
 
     PackageInfo info = new PackageInfo();
-    
+
     RedissonClient client = info.redisClient();
 
     Microservices seed = Microservices.builder().seeds(info.seedAddress())

@@ -45,7 +45,7 @@ public class Main {
    * @param seed node to join the cluster with.
    */
   public static void start(int port, Microservices seed) {
-    AccountService accountService = seed.proxy().api(AccountService.class).create();
+    AccountService accountService = seed.call().api(AccountService.class);
 
     ApiGateway.builder().port(port)
         .instance(accountService).api(AccountService.class)

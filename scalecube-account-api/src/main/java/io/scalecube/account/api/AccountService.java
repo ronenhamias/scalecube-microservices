@@ -3,50 +3,49 @@ package io.scalecube.account.api;
 import io.scalecube.services.annotations.Service;
 import io.scalecube.services.annotations.ServiceMethod;
 
-import java.util.concurrent.CompletableFuture;
+import reactor.core.publisher.Mono;
 
 @Service
 public interface AccountService {
 
   @ServiceMethod
-  public CompletableFuture<User> register(final Token token);
+  Mono<User> register(final Token token);
 
   @ServiceMethod
-  public CompletableFuture<CreateOrganizationResponse> createOrganization(CreateOrganizationRequest request);
+  Mono<CreateOrganizationResponse> createOrganization(CreateOrganizationRequest request);
 
   @ServiceMethod
-  public CompletableFuture<GetMembershipResponse> getUserOrganizationsMembership(GetMembershipRequest request);
+  Mono<GetMembershipResponse> getUserOrganizationsMembership(GetMembershipRequest request);
 
   @ServiceMethod
-  public CompletableFuture<GetOrganizationResponse> getOrganization(GetOrganizationRequest request);
+  Mono<GetOrganizationResponse> getOrganization(GetOrganizationRequest request);
 
   @ServiceMethod
-  public CompletableFuture<DeleteOrganizationResponse> deleteOrganization(DeleteOrganizationRequest request);
+  Mono<DeleteOrganizationResponse> deleteOrganization(DeleteOrganizationRequest request);
 
   @ServiceMethod
-  public CompletableFuture<UpdateOrganizationResponse> updateOrganization(UpdateOrganizationRequest request);
+  Mono<UpdateOrganizationResponse> updateOrganization(UpdateOrganizationRequest request);
 
   @ServiceMethod
-  public CompletableFuture<GetOrganizationMembersResponse> getOrganizationMembers(
+  Mono<GetOrganizationMembersResponse> getOrganizationMembers(
       GetOrganizationMembersRequest request);
 
   @ServiceMethod
-  public CompletableFuture<InviteOrganizationMemberResponse> inviteMember(InviteOrganizationMemberRequest request);
+  Mono<InviteOrganizationMemberResponse> inviteMember(InviteOrganizationMemberRequest request);
 
   @ServiceMethod
-  public CompletableFuture<KickoutOrganizationMemberResponse> kickoutMember(KickoutOrganizationMemberRequest request);
+  Mono<KickoutOrganizationMemberResponse> kickoutMember(KickoutOrganizationMemberRequest request);
 
   @ServiceMethod
-  public CompletableFuture<LeaveOrganizationResponse> leaveOrganization(LeaveOrganizationRequest request);
+  Mono<LeaveOrganizationResponse> leaveOrganization(LeaveOrganizationRequest request);
 
   @ServiceMethod
-  public CompletableFuture<GetOrganizationResponse> addOrganizationApiKey(AddOrganizationApiKeyRequest request);
+  Mono<GetOrganizationResponse> addOrganizationApiKey(AddOrganizationApiKeyRequest request);
 
   @ServiceMethod
-  public CompletableFuture<GetOrganizationResponse> deleteOrganizationApiKey(DeleteOrganizationApiKeyRequest request);
+  Mono<GetOrganizationResponse> deleteOrganizationApiKey(DeleteOrganizationApiKeyRequest request);
 
   @ServiceMethod
-  public CompletableFuture<FindUserResponse> searchUser(FindUserRequest request);
-
+  Mono<FindUserResponse> searchUser(FindUserRequest request);
 
 }

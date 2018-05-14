@@ -51,8 +51,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
+
+import reactor.core.publisher.Mono;
 
 public class RedisAccountService implements AccountService {
 
@@ -102,44 +103,44 @@ public class RedisAccountService implements AccountService {
   }
 
   @Override
-  public CompletableFuture<User> register(final Token token) {
-    CompletableFuture<User> future = new CompletableFuture<>();
+  public Mono<User> register(final Token token) {
+    Mono<User> result;
     try {
       User user = tokenVerifier.verify(token);
       if (user != null) {
         if (user.emailVerified()) {
           accountManager.register(user);
-          future.complete(user);
+          result = Mono.just(user);
         } else {
-          future.completeExceptionally(new EmailNotVerifiedException("please verify your email first"));
+          result = Mono.error(new EmailNotVerifiedException("please verify your email first"));
         }
       } else {
-        future.completeExceptionally(new InvalidAuthenticationToken());
+        result = Mono.error(new InvalidAuthenticationToken());
       }
     } catch (Exception ex) {
-      future.completeExceptionally(ex);
+      result = Mono.error(ex);
     }
-    return future;
+    return result;
   }
 
   @Override
-  public CompletableFuture<FindUserResponse> searchUser(FindUserRequest request) {
+  public Mono<FindUserResponse> searchUser(FindUserRequest request) {
     checkNotNull(request);
     checkNotNull(request.fullNameOrEmail());
 
-    CompletableFuture<FindUserResponse> future = new CompletableFuture<>();
+    Mono<FindUserResponse> result;
     if (request.fullNameOrEmail().length() >= 3) {
-      future.complete(new FindUserResponse(accountManager.searchUserByUserNameOrEmail(request.fullNameOrEmail())));
+      result = Mono.just(new FindUserResponse(accountManager.searchUserByUserNameOrEmail(request.fullNameOrEmail())));
     } else {
-      future.complete(new FindUserResponse());
+      result = Mono.just(new FindUserResponse());
     }
-    return future;
+    return result;
   }
 
   @Override
-  public CompletableFuture<CreateOrganizationResponse> createOrganization(CreateOrganizationRequest request) {
+  public Mono<CreateOrganizationResponse> createOrganization(CreateOrganizationRequest request) {
     checkNotNull(request);
-    CompletableFuture<CreateOrganizationResponse> future = new CompletableFuture<>();
+    Mono<CreateOrganizationResponse> result;
     try {
       final User user = tokenVerifier.verify(request.token());
       if (user != null && isKnownUser(user)) {
@@ -153,19 +154,19 @@ public class RedisAccountService implements AccountService {
             .secretKey(secretKey)
             .build());
 
-        future.complete(new CreateOrganizationResponse(newOrg.id(),
+        result = Mono.just(new CreateOrganizationResponse(newOrg.id(),
             newOrg.name(),
             newOrg.apiKeys(),
             newOrg.email(),
             newOrg.ownerId()));
 
       } else {
-        future.completeExceptionally(new InvalidAuthenticationToken());
+        result = Mono.error(new InvalidAuthenticationToken());
       }
     } catch (Exception ex) {
-      future.completeExceptionally(ex);
+      result = Mono.error(ex);
     }
-    return future;
+    return result;
   }
 
   private boolean isKnownUser(User user) {
@@ -173,8 +174,8 @@ public class RedisAccountService implements AccountService {
   }
 
   @Override
-  public CompletableFuture<GetOrganizationResponse> addOrganizationApiKey(AddOrganizationApiKeyRequest request) {
-    CompletableFuture<GetOrganizationResponse> future = new CompletableFuture<>();
+  public Mono<GetOrganizationResponse> addOrganizationApiKey(AddOrganizationApiKeyRequest request) {
+    Mono<GetOrganizationResponse> result;
     try {
       checkNotNull(request);
       checkNotNull(request.organizationId(), "organizationId is a required argument");
@@ -198,27 +199,27 @@ public class RedisAccountService implements AccountService {
 
         accountManager.updateOrganizationDetails(user, org, newOrg);
 
-        future.complete(new GetOrganizationResponse(newOrg.id(), newOrg.name(), newOrg.apiKeys(), newOrg.email(),
+        result = Mono.just(new GetOrganizationResponse(newOrg.id(), newOrg.name(), newOrg.apiKeys(), newOrg.email(),
             newOrg.ownerId()));
 
       } else {
-        future.completeExceptionally(new InvalidAuthenticationToken());
+        result = Mono.error(new InvalidAuthenticationToken());
       }
     } catch (Throwable ex) {
       ex.printStackTrace();
-      future.completeExceptionally(ex);
+      result = Mono.error(ex);
     }
-    return future;
+    return result;
   }
 
   @Override
-  public CompletableFuture<GetOrganizationResponse> deleteOrganizationApiKey(DeleteOrganizationApiKeyRequest request) {
+  public Mono<GetOrganizationResponse> deleteOrganizationApiKey(DeleteOrganizationApiKeyRequest request) {
     checkNotNull(request);
     checkNotNull(request.organizationId());
     checkNotNull(request.token());
     checkNotNull(request.apiKeyName());
 
-    CompletableFuture<GetOrganizationResponse> future = new CompletableFuture<>();
+    Mono<GetOrganizationResponse> result;
     try {
       final User user = tokenVerifier.verify(request.token());
       if (user != null && isKnownUser(user)) {
@@ -234,51 +235,51 @@ public class RedisAccountService implements AccountService {
 
         accountManager.updateOrganizationDetails(user, org, newOrg);
 
-        future.complete(new GetOrganizationResponse(newOrg.id(), newOrg.name(), newOrg.apiKeys(), newOrg.email(),
+        result = Mono.just(new GetOrganizationResponse(newOrg.id(), newOrg.name(), newOrg.apiKeys(), newOrg.email(),
             newOrg.ownerId()));
 
       } else {
-        future.completeExceptionally(new InvalidAuthenticationToken());
+        result = Mono.error(new InvalidAuthenticationToken());
       }
     } catch (Exception ex) {
-      future.completeExceptionally(ex);
+      result = Mono.error(ex);
     }
-    return future;
+    return result;
   }
 
   @Override
-  public CompletableFuture<DeleteOrganizationResponse> deleteOrganization(DeleteOrganizationRequest request) {
+  public Mono<DeleteOrganizationResponse> deleteOrganization(DeleteOrganizationRequest request) {
     checkNotNull(request);
     checkNotNull(request.organizationId());
     checkNotNull(request.token());
 
-    CompletableFuture<DeleteOrganizationResponse> future = new CompletableFuture<>();
+    Mono<DeleteOrganizationResponse> result;
     try {
       final User user = tokenVerifier.verify(request.token());
       if (user != null && isKnownUser(user)) {
         final Organization org = accountManager.getOrganization(request.organizationId());
         if (org != null) {
           accountManager.deleteOrganization(user, org);
-          future.complete(new DeleteOrganizationResponse(org.id(), true));
+          result = Mono.just(new DeleteOrganizationResponse(org.id(), true));
         } else {
-          future.completeExceptionally(new NoSuchOrganizationFound(request.organizationId()));
+          result = Mono.error(new NoSuchOrganizationFound(request.organizationId()));
         }
       } else {
-        future.completeExceptionally(new InvalidAuthenticationToken());
+        result = Mono.error(new InvalidAuthenticationToken());
       }
     } catch (Exception ex) {
-      future.completeExceptionally(ex);
+      result = Mono.error(ex);
     }
-    return future;
+    return result;
   }
 
   @Override
-  public CompletableFuture<UpdateOrganizationResponse> updateOrganization(UpdateOrganizationRequest request) {
+  public Mono<UpdateOrganizationResponse> updateOrganization(UpdateOrganizationRequest request) {
     checkNotNull(request);
     checkNotNull(request.organizationId());
     checkNotNull(request.token());
 
-    CompletableFuture<UpdateOrganizationResponse> future = new CompletableFuture<>();
+    Mono<UpdateOrganizationResponse> result;
     try {
       final User owner = tokenVerifier.verify(request.token());
       if (owner != null && isKnownUser(owner)) {
@@ -291,26 +292,26 @@ public class RedisAccountService implements AccountService {
               .copy(org);
 
           accountManager.updateOrganizationDetails(owner, org, newDetails);
-          future.complete(new UpdateOrganizationResponse(newDetails.id(), newDetails.name(), newDetails.apiKeys(),
+          result = Mono.just(new UpdateOrganizationResponse(newDetails.id(), newDetails.name(), newDetails.apiKeys(),
               newDetails.email(), newDetails.ownerId()));
         } else {
-          future.completeExceptionally(new NoSuchOrganizationFound(request.organizationId()));
+          result = Mono.error(new NoSuchOrganizationFound(request.organizationId()));
         }
       } else {
-        future.completeExceptionally(new InvalidAuthenticationToken());
+        result = Mono.error(new InvalidAuthenticationToken());
       }
     } catch (Exception ex) {
-      future.completeExceptionally(ex);
+      result = Mono.error(ex);
     }
-    return future;
+    return result;
   }
 
   @Override
-  public CompletableFuture<GetMembershipResponse> getUserOrganizationsMembership(GetMembershipRequest request) {
+  public Mono<GetMembershipResponse> getUserOrganizationsMembership(GetMembershipRequest request) {
     checkNotNull(request);
     checkNotNull(request.token());
 
-    CompletableFuture<GetMembershipResponse> future = new CompletableFuture<>();
+    Mono<GetMembershipResponse> result;
 
     Collection<Organization> results = new ArrayList<>();
     try {
@@ -323,45 +324,46 @@ public class RedisAccountService implements AccountService {
           infos.add(new OrganizationInfo(item.id(), item.name(), item.apiKeys(), item.email(), item.ownerId()));
         });
 
-        future.complete(new GetMembershipResponse(infos.toArray(new OrganizationInfo[results.size()])));
+        result = Mono.just(new GetMembershipResponse(infos.toArray(new OrganizationInfo[results.size()])));
       } else {
-        future.completeExceptionally(new InvalidAuthenticationToken());
+        result = Mono.error(new InvalidAuthenticationToken());
       }
     } catch (Exception ex) {
-      future.completeExceptionally(ex);
+      result = Mono.error(ex);
     }
 
-    return future;
+    return result;
   }
 
   @Override
-  public CompletableFuture<GetOrganizationResponse> getOrganization(GetOrganizationRequest request) {
+  public Mono<GetOrganizationResponse> getOrganization(GetOrganizationRequest request) {
     checkNotNull(request);
     checkNotNull(request.organizationId());
     checkNotNull(request.token());
 
-    CompletableFuture<GetOrganizationResponse> future = new CompletableFuture<>();
+    Mono<GetOrganizationResponse> result;
 
-    Organization result = null;
+    Organization organization = null;
     try {
       User user = tokenVerifier.verify(request.token());
       if (user != null && isKnownUser(user)) {
-        result = accountManager.getOrganization(request.organizationId());
-        if (result != null) {
-          future.complete(
-              new GetOrganizationResponse(result.id(), result.name(), result.apiKeys(), result.email(),
-                  result.ownerId()));
+        organization = accountManager.getOrganization(request.organizationId());
+        if (organization != null) {
+          result = Mono.just(
+              new GetOrganizationResponse(organization.id(), organization.name(), organization.apiKeys(),
+                  organization.email(),
+                  organization.ownerId()));
         } else {
-          future.completeExceptionally(new MissingOrganizationException(request.organizationId()));
+          result = Mono.error(new MissingOrganizationException(request.organizationId()));
         }
       } else {
-        future.completeExceptionally(new InvalidAuthenticationToken());
+        result = Mono.error(new InvalidAuthenticationToken());
       }
     } catch (Exception ex) {
-      future.completeExceptionally(ex);
+      result = Mono.error(ex);
     }
 
-    return future;
+    return result;
 
   }
 
@@ -371,35 +373,35 @@ public class RedisAccountService implements AccountService {
   ////////////////////////////
 
   @Override
-  public CompletableFuture<GetOrganizationMembersResponse> getOrganizationMembers(
+  public Mono<GetOrganizationMembersResponse> getOrganizationMembers(
       GetOrganizationMembersRequest request) {
     checkNotNull(request);
     checkNotNull(request.organizationId());
     checkNotNull(request.token());
 
-    CompletableFuture<GetOrganizationMembersResponse> future = new CompletableFuture<>();
+    Mono<GetOrganizationMembersResponse> result;
 
-    Collection<OrganizationMember> result = null;
+    Collection<OrganizationMember> organizationMembers = null;
     try {
       User user = tokenVerifier.verify(request.token());
       if (user != null && isKnownUser(user)) {
-        result = accountManager.getOrganizationMembers(request.organizationId());
-        future.complete(
+        organizationMembers = accountManager.getOrganizationMembers(request.organizationId());
+        result = Mono.just(
             new GetOrganizationMembersResponse(
-                (OrganizationMember[]) result.toArray(new OrganizationMember[result.size()])));
+                (OrganizationMember[]) organizationMembers.toArray(new OrganizationMember[organizationMembers.size()])));
       } else {
-        future.completeExceptionally(new InvalidAuthenticationToken());
+        result = Mono.error(new InvalidAuthenticationToken());
       }
     } catch (Exception ex) {
-      future.completeExceptionally(ex);
+      result = Mono.error(ex);
     }
 
-    return future;
+    return result;
   }
 
   @Override
-  public CompletableFuture<InviteOrganizationMemberResponse> inviteMember(InviteOrganizationMemberRequest request) {
-    CompletableFuture<InviteOrganizationMemberResponse> future = new CompletableFuture<>();
+  public Mono<InviteOrganizationMemberResponse> inviteMember(InviteOrganizationMemberRequest request) {
+    Mono<InviteOrganizationMemberResponse> result;
 
     try {
       User owner = tokenVerifier.verify(request.token());
@@ -408,28 +410,28 @@ public class RedisAccountService implements AccountService {
         User user = accountManager.getUser(request.userId());
         if (organization != null && user != null) {
           accountManager.invite(owner, organization, user);
-          future.complete(new InviteOrganizationMemberResponse());
+          result = Mono.just(new InviteOrganizationMemberResponse());
         } else {
-          future.completeExceptionally(new InvalidRequestException(
+          result = Mono.error(new InvalidRequestException(
               "Cannot complete request, target-organization or target-user was not found."));
         }
       } else {
-        future.completeExceptionally(new InvalidAuthenticationToken());
+        result = Mono.error(new InvalidAuthenticationToken());
       }
     } catch (Exception ex) {
-      future.completeExceptionally(ex);
+      result = Mono.error(ex);
     }
 
-    return future;
+    return result;
   }
 
   @Override
-  public CompletableFuture<KickoutOrganizationMemberResponse> kickoutMember(KickoutOrganizationMemberRequest request) {
+  public Mono<KickoutOrganizationMemberResponse> kickoutMember(KickoutOrganizationMemberRequest request) {
     checkNotNull(request);
     checkNotNull(request.organizationId());
     checkNotNull(request.token());
     checkNotNull(request.userId());
-    CompletableFuture<KickoutOrganizationMemberResponse> future = new CompletableFuture<>();
+    Mono<KickoutOrganizationMemberResponse> result;
 
     try {
       User owner = tokenVerifier.verify(request.token());
@@ -438,28 +440,28 @@ public class RedisAccountService implements AccountService {
         User user = accountManager.getUser(request.userId());
         if (organization != null && user != null) {
           accountManager.kickout(owner, organization, user);
-          future.complete(new KickoutOrganizationMemberResponse());
+          result = Mono.just(new KickoutOrganizationMemberResponse());
         } else {
-          future.completeExceptionally(new InvalidRequestException(
+          result = Mono.error(new InvalidRequestException(
               "Cannot complete request, target-organization or target-user was not found."));
         }
       } else {
-        future.completeExceptionally(new InvalidAuthenticationToken());
+        result = Mono.error(new InvalidAuthenticationToken());
       }
     } catch (Exception ex) {
-      future.completeExceptionally(ex);
+      result = Mono.error(ex);
     }
 
-    return future;
+    return result;
   }
 
   @Override
-  public CompletableFuture<LeaveOrganizationResponse> leaveOrganization(LeaveOrganizationRequest request) {
+  public Mono<LeaveOrganizationResponse> leaveOrganization(LeaveOrganizationRequest request) {
     checkNotNull(request);
     checkNotNull(request.organizationId());
     checkNotNull(request.token());
 
-    CompletableFuture<LeaveOrganizationResponse> future = new CompletableFuture<>();
+    Mono<LeaveOrganizationResponse> result;
 
     try {
       User user = tokenVerifier.verify(request.token());
@@ -467,18 +469,18 @@ public class RedisAccountService implements AccountService {
         Organization organization = accountManager.getOrganization(request.organizationId());
         if (organization != null) {
           accountManager.leave(organization, user);
-          future.complete(new LeaveOrganizationResponse());
+          result = Mono.just(new LeaveOrganizationResponse());
         } else {
-          future.completeExceptionally(new InvalidRequestException(
+          result = Mono.error(new InvalidRequestException(
               "Cannot complete request, target-organization was not found."));
         }
       } else {
-        future.completeExceptionally(new InvalidAuthenticationToken());
+        result = Mono.error(new InvalidAuthenticationToken());
       }
     } catch (Exception ex) {
-      future.completeExceptionally(ex);
+      result = Mono.error(ex);
     }
 
-    return future;
+    return result;
   }
 }

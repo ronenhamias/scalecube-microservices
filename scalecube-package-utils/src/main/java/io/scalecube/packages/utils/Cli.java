@@ -41,7 +41,7 @@ public class Cli {
 
         } else {
           Cli.prln("cluster member is shutting down...");
-          microservices.shutdown().get();
+          microservices.shutdown().block();
           Cli.prln("Good bye");
           break;
         }

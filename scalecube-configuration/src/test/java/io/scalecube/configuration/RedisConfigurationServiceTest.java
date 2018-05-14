@@ -49,11 +49,11 @@ public class RedisConfigurationServiceTest extends BaseTest {
     JsonNode json = mapper.valueToTree("1");
 
     service.save(new SaveRequest(token, "collection1", "key1", json))
-        .subscribe(success -> service.fetch(new FetchRequest(token, "collection1", "key1"))
-            .subscribe(response -> latch.result(response.value().toString()), latch::error));
+        .flatMap(success -> service.fetch(new FetchRequest(token, "collection1", "key1")))
+        .subscribe(response -> latch.result(response.value().toString()), latch::error);
 
     latch.timeout(5, TimeUnit.SECONDS);
-    assertEquals("\"1\"", latch.result().toString());
+    assertEquals("\"1\"", latch.result());
   }
 
   @Test
@@ -63,8 +63,8 @@ public class RedisConfigurationServiceTest extends BaseTest {
     JsonNode json = mapper.valueToTree("1");
 
     service.save(new SaveRequest(token, "collection1", "key1", json))
-        .subscribe(success -> service.delete(new DeleteRequest(token, "collection1", "key1"))
-            .subscribe(latch::result, latch::error));
+        .flatMap(success -> service.delete(new DeleteRequest(token, "collection1", "key1")))
+        .subscribe(latch::result, latch::error);
 
     latch.timeout(5, TimeUnit.SECONDS);
     assertEquals(Acknowledgment.class, latch.result().getClass());
@@ -77,8 +77,8 @@ public class RedisConfigurationServiceTest extends BaseTest {
     JsonNode json = mapper.valueToTree("1");
 
     service.save(new SaveRequest(token, "collection1", "key1", json))
-        .subscribe(success -> service.entries(new FetchRequest(token, "collection1", "key1"))
-            .subscribe(response -> latch.result(response.entries()), latch::error));
+        .flatMap(success -> service.entries(new FetchRequest(token, "collection1", "key1")))
+        .subscribe(response -> latch.result(response.entries()), latch::error);
 
     latch.timeout(5, TimeUnit.SECONDS);
     assertEquals(1, latch.result().length);

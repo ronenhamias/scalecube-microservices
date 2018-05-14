@@ -26,7 +26,7 @@ import io.scalecube.account.api.UpdateOrganizationRequest;
 import io.scalecube.account.api.UpdateOrganizationResponse;
 import io.scalecube.account.api.User;
 
-import java.util.concurrent.CompletableFuture;
+import reactor.core.publisher.Mono;
 
 public class MockAccountService implements AccountService {
 
@@ -37,79 +37,79 @@ public class MockAccountService implements AccountService {
   }
   
   @Override
-  public CompletableFuture<User> register(Token token) {
-    return CompletableFuture.completedFuture(this.user);
+  public Mono<User> register(Token token) {
+    return Mono.just(this.user);
   }
 
   @Override
-  public CompletableFuture<CreateOrganizationResponse> createOrganization(CreateOrganizationRequest request) {
+  public Mono<CreateOrganizationResponse> createOrganization(CreateOrganizationRequest request) {
     // TODO Auto-generated method stub
     return null;
   }
 
   @Override
-  public CompletableFuture<GetMembershipResponse> getUserOrganizationsMembership(GetMembershipRequest request) {
+  public Mono<GetMembershipResponse> getUserOrganizationsMembership(GetMembershipRequest request) {
     // TODO Auto-generated method stub
     return null;
   }
 
   @Override
-  public CompletableFuture<GetOrganizationResponse> getOrganization(GetOrganizationRequest request) {
+  public Mono<GetOrganizationResponse> getOrganization(GetOrganizationRequest request) {
     // TODO Auto-generated method stub
     return null;
   }
 
   @Override
-  public CompletableFuture<DeleteOrganizationResponse> deleteOrganization(DeleteOrganizationRequest request) {
+  public Mono<DeleteOrganizationResponse> deleteOrganization(DeleteOrganizationRequest request) {
     // TODO Auto-generated method stub
     return null;
   }
 
   @Override
-  public CompletableFuture<UpdateOrganizationResponse> updateOrganization(UpdateOrganizationRequest request) {
+  public Mono<UpdateOrganizationResponse> updateOrganization(UpdateOrganizationRequest request) {
     // TODO Auto-generated method stub
     return null;
   }
 
   @Override
-  public CompletableFuture<GetOrganizationMembersResponse> getOrganizationMembers(
+  public Mono<GetOrganizationMembersResponse> getOrganizationMembers(
       GetOrganizationMembersRequest request) {
     // TODO Auto-generated method stub
     return null;
   }
 
   @Override
-  public CompletableFuture<InviteOrganizationMemberResponse> inviteMember(InviteOrganizationMemberRequest request) {
+  public Mono<InviteOrganizationMemberResponse> inviteMember(InviteOrganizationMemberRequest request) {
     // TODO Auto-generated method stub
     return null;
   }
 
   @Override
-  public CompletableFuture<KickoutOrganizationMemberResponse> kickoutMember(KickoutOrganizationMemberRequest request) {
+  public Mono<KickoutOrganizationMemberResponse> kickoutMember(KickoutOrganizationMemberRequest request) {
     // TODO Auto-generated method stub
     return null;
   }
 
   @Override
-  public CompletableFuture<LeaveOrganizationResponse> leaveOrganization(LeaveOrganizationRequest request) {
+  public Mono<LeaveOrganizationResponse> leaveOrganization(LeaveOrganizationRequest request) {
     // TODO Auto-generated method stub
     return null;
   }
 
   @Override
-  public CompletableFuture<GetOrganizationResponse> addOrganizationApiKey(AddOrganizationApiKeyRequest request) {
+  public Mono<GetOrganizationResponse> addOrganizationApiKey(AddOrganizationApiKeyRequest request) {
     // TODO Auto-generated method stub
     return null;
   }
 
   @Override
-  public CompletableFuture<GetOrganizationResponse> deleteOrganizationApiKey(DeleteOrganizationApiKeyRequest request) {
+  public Mono<GetOrganizationResponse> deleteOrganizationApiKey(DeleteOrganizationApiKeyRequest request) {
     // TODO Auto-generated method stub
     return null;
   }
 
   @Override
-  public CompletableFuture<FindUserResponse> searchUser(FindUserRequest request) {
+  public Mono<FindUserResponse> searchUser(FindUserRequest request) {
     // TODO Auto-generated method stub
     return null;
   }

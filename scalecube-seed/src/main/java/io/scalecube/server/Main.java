@@ -7,6 +7,7 @@ import io.scalecube.packages.utils.Logo;
 import io.scalecube.packages.utils.PackageInfo;
 import io.scalecube.services.Microservices;
 
+import java.util.Arrays;
 import java.util.HashMap;
 
 /**
@@ -33,7 +34,7 @@ public class Main {
       Cli.prln("Seed Host and port not specified - running as standalone seed.");
       seed = Microservices.builder().clusterConfig(conf).build();
     } else {
-      Cli.prln("Seed Host and port specified - trying to join cluster: " + packageInfo.seedAddress());
+      Cli.prln("Seed Host and port specified - trying to join cluster: " + Arrays.toString(packageInfo.seedAddress()));
       seed = Microservices.builder().clusterConfig(conf).seeds(packageInfo.seedAddress()).build();
     }
 

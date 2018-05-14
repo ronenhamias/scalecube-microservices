@@ -14,10 +14,11 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
+
+import reactor.core.publisher.Mono;
 
 public class ApiGateway {
 
@@ -66,19 +67,17 @@ public class ApiGateway {
           result = method.invoke(builder.serviceInstance);
         }
 
-        if (result != null && result instanceof CompletableFuture) {
-          CompletableFuture<?> future = (CompletableFuture<?>) result;
-          future.whenComplete((success, error) -> {
-            if (success != null) {
+        if (result != null && result instanceof Mono) {
+          Mono<?> mono = (Mono<?>) result;
+          mono.subscribe(success -> {
               try {
-
                 IO.write(req.response().out(), mapper.writeValueAsBytes(success));
                 req.done();
               } catch (JsonProcessingException e) {
                 IO.write(req.response().out(), "{\"message\":\"" + e.getMessage() + "\"}");
                 req.done();
               }
-            } else {
+          }, error -> {
               if (error.getClass().getSimpleName().equals("InvalidAuthenticationToken")) {
                 req.response().code(401);
                 IO.write(req.response().out(), "{\"message\":\"InvalidAuthenticationToken\"}");
@@ -88,8 +87,6 @@ public class ApiGateway {
                 IO.write(req.response().out(), "{\"message\":\"" + error.getMessage() + "\"}");
                 req.done();
               }
-
-            }
           });
         }
 

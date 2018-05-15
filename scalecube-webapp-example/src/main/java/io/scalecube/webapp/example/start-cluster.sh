@@ -1,15 +1,15 @@
 #!/bin/bash
 
 DOCKER_REPO=scalecube/configuration
-VERSION=0.0.5-SNAPSHOT
+VERSION=0.0.6-SNAPSHOT
 SEED_PORT=4802
 
-docker pull $DOCKER_REPO:scalecube-seed-0.0.5-SNAPSHOT
-docker pull $DOCKER_REPO:scalecube-account-0.0.5-SNAPSHOT
-docker pull $DOCKER_REPO:scalecube-configuration-0.0.5-SNAPSHOT
-docker pull $DOCKER_REPO:scalecube-account-gateway-0.0.5-SNAPSHOT
-docker pull $DOCKER_REPO:scalecube-configuration-gateway-0.0.5-SNAPSHOT
-docker pull $DOCKER_REPO:scalecube-configuration-gateway-0.0.5-SNAPSHOT
+docker pull $DOCKER_REPO:scalecube-seed-0.0.6-SNAPSHOT
+docker pull $DOCKER_REPO:scalecube-account-0.0.6-SNAPSHOT
+docker pull $DOCKER_REPO:scalecube-configuration-0.0.6-SNAPSHOT
+docker pull $DOCKER_REPO:scalecube-account-gateway-0.0.6-SNAPSHOT
+docker pull $DOCKER_REPO:scalecube-configuration-gateway-0.0.6-SNAPSHOT
+docker pull $DOCKER_REPO:scalecube-configuration-gateway-0.0.6-SNAPSHOT
 
 docker-ip() {
   docker inspect --format '{{ .NetworkSettings.IPAddress }}' "$@"

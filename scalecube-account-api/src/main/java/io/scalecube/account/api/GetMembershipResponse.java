@@ -11,6 +11,11 @@ public class GetMembershipResponse {
 
   private OrganizationInfo[] organizations;
 
+  /**
+   * @deprecated only for serialization/deserialization
+   */
+  GetMembershipResponse() {}
+
   public GetMembershipResponse(OrganizationInfo[] organizationInfos) {
     this.organizations = organizationInfos;
   }

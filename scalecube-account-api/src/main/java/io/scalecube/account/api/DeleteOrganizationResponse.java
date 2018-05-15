@@ -5,6 +5,11 @@ public class DeleteOrganizationResponse {
   private boolean deleted;
   private String organizationId;
 
+  /**
+   * @deprecated only for serialization/deserialization
+   */
+  DeleteOrganizationResponse() {}
+
   public DeleteOrganizationResponse(String organizationId, boolean deleted) {
     this.deleted = deleted;
     this.organizationId = organizationId;

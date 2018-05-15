@@ -6,6 +6,11 @@ public class DeleteOrganizationRequest {
 
   private Token token;
 
+  /**
+   * @deprecated only for serialization/deserialization
+   */
+  DeleteOrganizationRequest() {}
+
   public DeleteOrganizationRequest(Token token, String organizationId) {
     this.token = token;
     this.organizationId = organizationId;

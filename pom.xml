@@ -168,7 +168,7 @@
 							<configLocation>checkstyle.xml</configLocation>
 							<encoding>UTF-8</encoding>
 							<consoleOutput>true</consoleOutput>
-							<violationSeverity>warning</violationSeverity>
+							<violationSeverity>error</violationSeverity>
 							<failsOnError>true</failsOnError>
 							<maxAllowedViolations>0</maxAllowedViolations>
 							<suppressionsLocation>checkstyle-suppression.xml</suppressionsLocation>

@@ -21,7 +21,7 @@ public class Main {
    * 
    * @param args none.
    */
-  public static void main(String[] args) {
+  public static void main(String[] args) throws InterruptedException {
     PackageInfo packageInfo = new PackageInfo();
     Microservices seed;
 
@@ -54,5 +54,7 @@ public class Main {
       Cli cli = new Cli(seed);
       cli.start();
     }
+
+    Thread.currentThread().join();
   }
 }

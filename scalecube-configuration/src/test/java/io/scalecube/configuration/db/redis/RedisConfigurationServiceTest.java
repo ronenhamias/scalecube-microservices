@@ -49,17 +49,17 @@ public class RedisConfigurationServiceTest extends BaseTest {
     JsonNode json = mapper.valueToTree("1");
 
     service.save(new SaveRequest(token, "collection1", "key1", json))
-        .whenComplete((success, err) -> {
+        .subscribe(success -> {
 
           if (success != null) {
             service.fetch(new FetchRequest(token, "collection1", "key1"))
-                .whenComplete((response, error) -> {
+                .doAfterSuccessOrError((response, error) -> {
                   if (response != null) {
                     latch.result(response.value().toString());
                   } else {
                     latch.error(error);
                   }
-                });
+                }).subscribe();
           }
 
         });
@@ -75,20 +75,20 @@ public class RedisConfigurationServiceTest extends BaseTest {
     JsonNode json = mapper.valueToTree("1");
 
     service.save(new SaveRequest(token, "collection1", "key1", json))
-        .whenComplete((success, err) -> {
+        .doAfterSuccessOrError((success, err) -> {
 
           if (success != null) {
             service.delete(new DeleteRequest(token, "collection1", "key1"))
-                .whenComplete((response, error) -> {
+                .doAfterSuccessOrError((response, error) -> {
                   if (response != null) {
                     latch.result(response);
                   } else {
                     latch.error(error);
                   }
-                });
+                }).subscribe();
           }
 
-        });
+        }).subscribe();
 
     latch.timeout(5, TimeUnit.SECONDS);
     assertEquals(Acknowledgment.class, latch.result().getClass());
@@ -101,20 +101,20 @@ public class RedisConfigurationServiceTest extends BaseTest {
     JsonNode json = mapper.valueToTree("1");
 
     service.save(new SaveRequest(token, "collection1", "key1", json))
-        .whenComplete((success, err) -> {
+        .doAfterSuccessOrError((success, err) -> {
 
           if (success != null) {
             service.entries(new FetchRequest(token, "collection1", "key1"))
-                .whenComplete((response, error) -> {
+                .doAfterSuccessOrError((response, error) -> {
                   if (response != null) {
                     latch.result(response.entries());
                   } else {
                     latch.error(error);
                   }
-                });
+                }).subscribe();
           }
 
-        });
+        }).subscribe();
 
     latch.timeout(5, TimeUnit.SECONDS);
     assertEquals(1, latch.result().length);

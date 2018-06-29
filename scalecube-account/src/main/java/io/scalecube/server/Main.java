@@ -20,11 +20,11 @@ public class Main {
     if (info.seedAddress() != null) {
       seed = Microservices.builder()
           .services(RedisAccountService.builder().redisson(info.redisClient()).build())
-          .seeds(info.seedAddress()).build();
+          .seeds(info.seedAddress()).startAwait();
     } else {
       seed = Microservices.builder()
           .services(RedisAccountService.builder().redisson(info.redisClient()).build())
-          .build();
+          .startAwait();
     }
 
     Logo.builder().tagVersion(info.version())

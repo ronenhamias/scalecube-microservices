@@ -37,13 +37,13 @@ public class RedisAccountServiceTest extends BaseTest {
   @Test
   public void testRegisterUser() throws Exception {
     AwaitLatch<User> await = Await.one();
-    account.register(token).whenComplete((success, error) -> {
+    account.register(token).doAfterSuccessOrError((success, error) -> {
       if (error == null) {
         await.result(success);
       } else {
         await.error(error);
       }
-    });
+    }).subscribe();
     await.timeout(2, TimeUnit.SECONDS);
     assertNotNull(await.result());
   }
@@ -52,17 +52,17 @@ public class RedisAccountServiceTest extends BaseTest {
   public void testCreateOrganization() throws Exception {
     AwaitLatch<CreateOrganizationResponse> await = Await.one();
 
-    account.register(token).thenRun(() -> {
+    account.register(token).doAfterTerminate(() -> {
       account.createOrganization(new CreateOrganizationRequest("myTestOrg5", token, "email"))
-          .whenComplete((success, error) -> {
+          .doAfterSuccessOrError((success, error) -> {
             if (error == null) {
               await.result(success);
             } else {
               await.error(error);
             }
 
-          });
-    });
+          }).subscribe();
+    }).subscribe();
     await.timeout(2, TimeUnit.SECONDS);
     assertNotNull(await.result());
   }
@@ -71,16 +71,16 @@ public class RedisAccountServiceTest extends BaseTest {
   public void testGetOrganizationDetails() throws Exception {
     AwaitLatch<GetMembershipResponse> await = Await.one();
 
-    account.register(token).thenRun(() -> {
+    account.register(token).doAfterTerminate(() -> {
       account.getUserOrganizationsMembership(new GetMembershipRequest(token))
-          .whenComplete((success, error) -> {
+          .doAfterSuccessOrError((success, error) -> {
             if (error == null) {
               await.result(success);
             } else {
               await.error(error);
             }
-          });
-    });
+          }).subscribe();
+    }).subscribe();
     await.timeout(2, TimeUnit.SECONDS);
     assertNotNull(await.result());
   }
@@ -89,19 +89,19 @@ public class RedisAccountServiceTest extends BaseTest {
   public void testGetOrganization() throws Exception {
     AwaitLatch<GetOrganizationResponse> await = Await.one();
 
-    account.register(token).thenRun(() -> {
+    account.register(token).doAfterTerminate(() -> {
       account.createOrganization(new CreateOrganizationRequest("org1", token, "email"))
-          .whenComplete((ack, nack) -> {
+          .doAfterSuccessOrError((ack, nack) -> {
             account.getOrganization(new GetOrganizationRequest(token, ack.id()))
-                .whenComplete((success, error) -> {
+                .doAfterSuccessOrError((success, error) -> {
                   if (error == null) {
                     await.result(success);
                   } else {
                     await.error(error);
                   }
-                });
-          });
-    });
+                }).subscribe();
+          }).subscribe();
+    }).subscribe();
 
     await.timeout(2, TimeUnit.SECONDS);
     assertNotNull(await.result());
@@ -111,19 +111,19 @@ public class RedisAccountServiceTest extends BaseTest {
   public void testDeleteOrganization() throws Exception {
     AwaitLatch<DeleteOrganizationResponse> await = Await.one();
 
-    account.register(token).thenRun(() -> {
+    account.register(token).doAfterTerminate(() -> {
       account.createOrganization(new CreateOrganizationRequest("org2", token, "email"))
-          .whenComplete((ack, nack) -> {
+          .doAfterSuccessOrError((ack, nack) -> {
             account.deleteOrganization(new DeleteOrganizationRequest(token, ack.id()))
-                .whenComplete((success, error) -> {
+                .doAfterSuccessOrError((success, error) -> {
                   if (error == null) {
                     await.result(success);
                   } else {
                     await.error(error);
                   }
-                });
-          });
-    });
+                }).subscribe();
+          }).subscribe();
+    }).subscribe();
 
     await.timeout(2, TimeUnit.SECONDS);
     assertNotNull(await.result());

@@ -23,7 +23,7 @@ public class Main {
     Microservices seed = Microservices.builder()
         .seeds(info.seedAddress())
         .services(service)
-        .build();
+        .startAwait();
 
     Logo.builder().tagVersion(info.version())
         .port(seed.cluster().address().port() + "")

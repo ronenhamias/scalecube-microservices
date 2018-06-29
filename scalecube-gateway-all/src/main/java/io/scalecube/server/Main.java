@@ -27,7 +27,7 @@ public class Main {
     Microservices seed = Microservices.builder().seeds(info.seedAddress())
         .services(RedisAccountService.builder().redisson(client).build(),
             RedisConfigurationService.builder().redisson(client).build())
-        .build();
+        .startAwait();
 
     AccountGateway.start(info.gatewayPort(), seed);
     ConfigurationGateway.start(info.gatewayPort(), seed);

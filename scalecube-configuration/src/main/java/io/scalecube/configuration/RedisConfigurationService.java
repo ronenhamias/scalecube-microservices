@@ -11,7 +11,7 @@ import io.scalecube.configuration.api.FetchResponse;
 import io.scalecube.configuration.api.InvalidPermissionsException;
 import io.scalecube.configuration.api.SaveRequest;
 import io.scalecube.configuration.db.redis.RedisStore;
-import io.scalecube.services.annotations.ServiceProxy;
+import io.scalecube.services.annotations.Inject;
 
 import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
@@ -28,7 +28,7 @@ public class RedisConfigurationService implements ConfigurationService {
   private static final String PERMISSIONS_LEVEL = "permissions-level";
   private static final Logger LOGGER = LoggerFactory.getLogger(RedisConfigurationService.class);
   
-  @ServiceProxy
+  @Inject
   private AccountService accountService;
 
   private final RedisStore<Document> store;

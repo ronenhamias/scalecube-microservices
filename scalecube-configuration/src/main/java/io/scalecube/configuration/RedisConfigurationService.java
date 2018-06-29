@@ -17,17 +17,18 @@ import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import reactor.core.publisher.Mono;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 public class RedisConfigurationService implements ConfigurationService {
 
   private static final String PERMISSIONS_LEVEL = "permissions-level";
   private static final Logger LOGGER = LoggerFactory.getLogger(RedisConfigurationService.class);
-  
+
   @Inject
   private AccountService accountService;
 
@@ -58,11 +59,11 @@ public class RedisConfigurationService implements ConfigurationService {
     }
 
   }
-  
+
   public static Builder builder() {
     return new Builder();
   }
-  
+
   private RedisConfigurationService(RedisStore<Document> store, AccountService accountService) {
     this.store = store;
     this.accountService = accountService;
@@ -73,26 +74,26 @@ public class RedisConfigurationService implements ConfigurationService {
   }
 
   @Override
-  public CompletableFuture<FetchResponse> fetch(final FetchRequest request) {
-    
-    LOGGER.debug("recived fetch request {}",request);
-    final CompletableFuture<FetchResponse> future = new CompletableFuture<>();
-    accountService.register(request.token()).whenComplete((success, error) -> {
-      if (error == null) {
-        final Document result = store.get(getCollectionName(request), request.key());
-        if (result != null) {
-          future.complete(FetchResponse.builder()
-              .key(result.key())
-              .value(result.value())
-              .build());
+  public Mono<FetchResponse> fetch(final FetchRequest request) {
+
+    LOGGER.debug("recived fetch request {}", request);
+    return Mono.create(future -> {
+      accountService.register(request.token()).doOnSuccessOrError((success, error) -> {
+        if (error == null) {
+          final Document result = store.get(getCollectionName(request), request.key());
+          if (result != null) {
+            future.success(FetchResponse.builder()
+                .key(result.key())
+                .value(result.value())
+                .build());
+          } else {
+            future.success(FetchResponse.builder().build());
+          }
         } else {
-          future.complete(FetchResponse.builder().build());
+          future.error(error);
         }
-      } else {
-        future.completeExceptionally(error);
-      }
+      }).subscribe();
     });
-    return future;
   }
 
   private String getCollectionName(final AccessRequest request) {
@@ -100,69 +101,68 @@ public class RedisConfigurationService implements ConfigurationService {
   }
 
   @Override
-  public CompletableFuture<Entries<FetchResponse>> entries(final FetchRequest request) {
-    final CompletableFuture<Entries<FetchResponse>> future = new CompletableFuture<>();
-    accountService.register(request.token()).whenComplete((success, error) -> {
-      if (error == null) {
-        final Collection<Document> result = store.entries(getCollectionName(request));
-        List<FetchResponse> resultSet =
-            result.stream().map(doc -> FetchResponse.builder().key(doc.key()).value(doc.value()).build())
-                .collect(Collectors.toList());
+  public Mono<Entries<FetchResponse>> entries(final FetchRequest request) {
+    return Mono.create(future -> {
+      accountService.register(request.token()).doOnSuccessOrError((success, error) -> {
+        if (error == null) {
+          final Collection<Document> result = store.entries(getCollectionName(request));
+          List<FetchResponse> resultSet =
+              result.stream().map(doc -> FetchResponse.builder().key(doc.key()).value(doc.value()).build())
+                  .collect(Collectors.toList());
 
-        future.complete(new Entries((FetchResponse[]) resultSet.toArray(new FetchResponse[resultSet.size()])));
-      } else {
-        future.completeExceptionally(error);
-      }
+          future.success(new Entries((FetchResponse[]) resultSet.toArray(new FetchResponse[resultSet.size()])));
+        } else {
+          future.error(error);
+        }
+      }).subscribe();
     });
-    return future;
   }
 
   @Override
-  public CompletableFuture<Acknowledgment> save(SaveRequest request) {
+  public Mono<Acknowledgment> save(SaveRequest request) {
 
-    final CompletableFuture<Acknowledgment> future = new CompletableFuture<>();
-    accountService.register(request.token()).whenComplete((success, error) -> {
-      if (error == null) {
-        if (getPermissions(success.claims()).ordinal() >= Permissions.write.ordinal()) {
-          Document doc = Document.builder()
-              .key(request.key())
-              .value(request.value())
-              .build();
+    return Mono.create(future -> {
+      accountService.register(request.token()).doOnSuccessOrError((success, error) -> {
+        if (error == null) {
+          if (getPermissions(success.claims()).ordinal() >= Permissions.write.ordinal()) {
+            Document doc = Document.builder()
+                .key(request.key())
+                .value(request.value())
+                .build();
 
-          store.put(getCollectionName(request), doc.key(), doc);
-          future.complete(new Acknowledgment());
+            store.put(getCollectionName(request), doc.key(), doc);
+            future.success(new Acknowledgment());
+          } else {
+            future.error(
+                new InvalidPermissionsException("invalid permissions-level save request requires write access"));
+          }
         } else {
-          future.completeExceptionally(
-              new InvalidPermissionsException("invalid permissions-level save request requires write access"));
+          future.error(error);
         }
-      } else {
-        future.completeExceptionally(error);
-      }
-    });
+      }).subscribe();
 
-    return future;
+    });
   }
 
 
   @Override
-  public CompletableFuture<Acknowledgment> delete(DeleteRequest request) {
+  public Mono<Acknowledgment> delete(DeleteRequest request) {
 
-    final CompletableFuture<Acknowledgment> future = new CompletableFuture<>();
-    accountService.register(request.token()).whenComplete((success, error) -> {
-      if (error == null) {
-        if (getPermissions(success.claims()).ordinal() >= Permissions.write.ordinal()) {
-          store.remove(getCollectionName(request), request.key());
-          future.complete(new Acknowledgment());
+    return Mono.create(future -> {
+      accountService.register(request.token()).doOnSuccessOrError((success, error) -> {
+        if (error == null) {
+          if (getPermissions(success.claims()).ordinal() >= Permissions.write.ordinal()) {
+            store.remove(getCollectionName(request), request.key());
+            future.success(new Acknowledgment());
+          } else {
+            future.error(
+                new InvalidPermissionsException("invalid permissions-level delete request requires write access"));
+          }
         } else {
-          future.completeExceptionally(
-              new InvalidPermissionsException("invalid permissions-level delete request requires write access"));
+          future.error(error);
         }
-      } else {
-        future.completeExceptionally(error);
-      }
+      }).subscribe();
     });
-
-    return future;
   }
 
   private Permissions getPermissions(Map<String, String> claims) {

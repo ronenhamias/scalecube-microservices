@@ -47,11 +47,12 @@ import com.google.common.collect.Lists;
 
 import org.redisson.api.RedissonClient;
 
+import reactor.core.publisher.Mono;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 public class RedisAccountService implements AccountService {
@@ -102,70 +103,70 @@ public class RedisAccountService implements AccountService {
   }
 
   @Override
-  public CompletableFuture<User> register(final Token token) {
-    CompletableFuture<User> future = new CompletableFuture<>();
-    try {
-      User user = tokenVerifier.verify(token);
-      if (user != null) {
-        if (user.emailVerified()) {
-          accountManager.register(user);
-          future.complete(user);
+  public Mono<User> register(final Token token) {
+    return Mono.create(sink -> {
+      try {
+        User user = tokenVerifier.verify(token);
+        if (user != null) {
+          if (user.emailVerified()) {
+            accountManager.register(user);
+            sink.success(user);
+          } else {
+            sink.error(new EmailNotVerifiedException("please verify your email first"));
+          }
         } else {
-          future.completeExceptionally(new EmailNotVerifiedException("please verify your email first"));
+          sink.error(new InvalidAuthenticationToken());
         }
-      } else {
-        future.completeExceptionally(new InvalidAuthenticationToken());
+      } catch (Exception ex) {
+        sink.error(ex);
       }
-    } catch (Exception ex) {
-      future.completeExceptionally(ex);
-    }
-    return future;
+    });
   }
 
   @Override
-  public CompletableFuture<FindUserResponse> searchUser(FindUserRequest request) {
+  public Mono<FindUserResponse> searchUser(FindUserRequest request) {
     checkNotNull(request);
     checkNotNull(request.fullNameOrEmail());
 
-    CompletableFuture<FindUserResponse> future = new CompletableFuture<>();
-    if (request.fullNameOrEmail().length() >= 3) {
-      future.complete(new FindUserResponse(accountManager.searchUserByUserNameOrEmail(request.fullNameOrEmail())));
-    } else {
-      future.complete(new FindUserResponse());
-    }
-    return future;
+    return Mono.create(sink -> {
+      if (request.fullNameOrEmail().length() >= 3) {
+        sink.success(new FindUserResponse(accountManager.searchUserByUserNameOrEmail(request.fullNameOrEmail())));
+      } else {
+        sink.success(new FindUserResponse());
+      }
+    });
   }
 
   @Override
-  public CompletableFuture<CreateOrganizationResponse> createOrganization(CreateOrganizationRequest request) {
+  public Mono<CreateOrganizationResponse> createOrganization(CreateOrganizationRequest request) {
     checkNotNull(request);
-    CompletableFuture<CreateOrganizationResponse> future = new CompletableFuture<>();
-    try {
-      final User user = tokenVerifier.verify(request.token());
-      if (user != null && isKnownUser(user)) {
-        final String secretKey = IdGenerator.generateId();
+    return Mono.create(sink -> {
+      try {
+        final User user = tokenVerifier.verify(request.token());
+        if (user != null && isKnownUser(user)) {
+          final String secretKey = IdGenerator.generateId();
 
-        final Organization newOrg = accountManager.createOrganization(user, Organization.builder()
-            .id(IdGenerator.generateId())
-            .name(request.name())
-            .ownerId(user.id())
-            .email(request.email())
-            .secretKey(secretKey)
-            .build());
+          final Organization newOrg = accountManager.createOrganization(user, Organization.builder()
+              .id(IdGenerator.generateId())
+              .name(request.name())
+              .ownerId(user.id())
+              .email(request.email())
+              .secretKey(secretKey)
+              .build());
 
-        future.complete(new CreateOrganizationResponse(newOrg.id(),
-            newOrg.name(),
-            newOrg.apiKeys(),
-            newOrg.email(),
-            newOrg.ownerId()));
+          sink.success(new CreateOrganizationResponse(newOrg.id(),
+              newOrg.name(),
+              newOrg.apiKeys(),
+              newOrg.email(),
+              newOrg.ownerId()));
 
-      } else {
-        future.completeExceptionally(new InvalidAuthenticationToken());
+        } else {
+          sink.error(new InvalidAuthenticationToken());
+        }
+      } catch (Exception ex) {
+        sink.error(ex);
       }
-    } catch (Exception ex) {
-      future.completeExceptionally(ex);
-    }
-    return future;
+    });
   }
 
   private boolean isKnownUser(User user) {
@@ -173,195 +174,196 @@ public class RedisAccountService implements AccountService {
   }
 
   @Override
-  public CompletableFuture<GetOrganizationResponse> addOrganizationApiKey(AddOrganizationApiKeyRequest request) {
-    CompletableFuture<GetOrganizationResponse> future = new CompletableFuture<>();
-    try {
-      checkNotNull(request);
-      checkNotNull(request.organizationId(), "organizationId is a required argument");
-      checkNotNull(request.token(), "token is a required argument");
-      checkNotNull(request.apiKeyName(), "apiKeyName is a required argument");
+  public Mono<GetOrganizationResponse> addOrganizationApiKey(AddOrganizationApiKeyRequest request) {
+    return Mono.create(future -> {
+      try {
+        checkNotNull(request);
+        checkNotNull(request.organizationId(), "organizationId is a required argument");
+        checkNotNull(request.token(), "token is a required argument");
+        checkNotNull(request.apiKeyName(), "apiKeyName is a required argument");
 
-      final User user = tokenVerifier.verify(request.token());
-      if (user != null && isKnownUser(user)) {
-        final Organization org = accountManager.getOrganization(request.organizationId());
+        final User user = tokenVerifier.verify(request.token());
+        if (user != null && isKnownUser(user)) {
+          final Organization org = accountManager.getOrganization(request.organizationId());
 
-        ApiKey apiKey = JwtApiKey.builder().origin("account-service")
-            .subject(org.id())
-            .name(request.apiKeyName())
-            .claims(request.claims())
-            .id(org.id())
-            .build(org.secretKey());
+          ApiKey apiKey = JwtApiKey.builder().origin("account-service")
+              .subject(org.id())
+              .name(request.apiKeyName())
+              .claims(request.claims())
+              .id(org.id())
+              .build(org.secretKey());
 
-        JwtApiKey[] apiKeys = Lists.asList(apiKey, org.apiKeys()).toArray(new JwtApiKey[org.apiKeys().length + 1]);
+          JwtApiKey[] apiKeys = Lists.asList(apiKey, org.apiKeys()).toArray(new JwtApiKey[org.apiKeys().length + 1]);
 
-        Organization newOrg = org.builder().apiKey(apiKeys).copy(org);
+          Organization newOrg = org.builder().apiKey(apiKeys).copy(org);
 
-        accountManager.updateOrganizationDetails(user, org, newOrg);
+          accountManager.updateOrganizationDetails(user, org, newOrg);
 
-        future.complete(new GetOrganizationResponse(newOrg.id(), newOrg.name(), newOrg.apiKeys(), newOrg.email(),
-            newOrg.ownerId()));
+          future.success(new GetOrganizationResponse(newOrg.id(), newOrg.name(), newOrg.apiKeys(), newOrg.email(),
+              newOrg.ownerId()));
 
-      } else {
-        future.completeExceptionally(new InvalidAuthenticationToken());
+        } else {
+          future.error(new InvalidAuthenticationToken());
+        }
+      } catch (Throwable ex) {
+        ex.printStackTrace();
+        future.error(ex);
       }
-    } catch (Throwable ex) {
-      ex.printStackTrace();
-      future.completeExceptionally(ex);
-    }
-    return future;
+    });
   }
 
   @Override
-  public CompletableFuture<GetOrganizationResponse> deleteOrganizationApiKey(DeleteOrganizationApiKeyRequest request) {
+  public Mono<GetOrganizationResponse> deleteOrganizationApiKey(DeleteOrganizationApiKeyRequest request) {
     checkNotNull(request);
     checkNotNull(request.organizationId());
     checkNotNull(request.token());
     checkNotNull(request.apiKeyName());
 
-    CompletableFuture<GetOrganizationResponse> future = new CompletableFuture<>();
-    try {
-      final User user = tokenVerifier.verify(request.token());
-      if (user != null && isKnownUser(user)) {
-        final Organization org = accountManager.getOrganization(request.organizationId());
+    return Mono.create(future -> {
+      try {
+        final User user = tokenVerifier.verify(request.token());
+        if (user != null && isKnownUser(user)) {
+          final Organization org = accountManager.getOrganization(request.organizationId());
 
-        List<ApiKey> apiKeys = Arrays.asList(org.apiKeys());
+          List<ApiKey> apiKeys = Arrays.asList(org.apiKeys());
 
-        List<ApiKey> reduced = apiKeys.stream()
-            .filter(api -> !api.name().equals(request.apiKeyName()))
-            .collect(Collectors.toList());
+          List<ApiKey> reduced = apiKeys.stream()
+              .filter(api -> !api.name().equals(request.apiKeyName()))
+              .collect(Collectors.toList());
 
-        Organization newOrg = org.builder().apiKey(reduced.toArray(new ApiKey[reduced.size()])).copy(org);
+          Organization newOrg = org.builder().apiKey(reduced.toArray(new ApiKey[reduced.size()])).copy(org);
 
-        accountManager.updateOrganizationDetails(user, org, newOrg);
+          accountManager.updateOrganizationDetails(user, org, newOrg);
 
-        future.complete(new GetOrganizationResponse(newOrg.id(), newOrg.name(), newOrg.apiKeys(), newOrg.email(),
-            newOrg.ownerId()));
+          future.success(new GetOrganizationResponse(newOrg.id(), newOrg.name(), newOrg.apiKeys(), newOrg.email(),
+              newOrg.ownerId()));
 
-      } else {
-        future.completeExceptionally(new InvalidAuthenticationToken());
+        } else {
+          future.error(new InvalidAuthenticationToken());
+        }
+      } catch (Exception ex) {
+        future.error(ex);
       }
-    } catch (Exception ex) {
-      future.completeExceptionally(ex);
-    }
-    return future;
+    });
   }
 
   @Override
-  public CompletableFuture<DeleteOrganizationResponse> deleteOrganization(DeleteOrganizationRequest request) {
+  public Mono<DeleteOrganizationResponse> deleteOrganization(DeleteOrganizationRequest request) {
     checkNotNull(request);
     checkNotNull(request.organizationId());
     checkNotNull(request.token());
 
-    CompletableFuture<DeleteOrganizationResponse> future = new CompletableFuture<>();
-    try {
-      final User user = tokenVerifier.verify(request.token());
-      if (user != null && isKnownUser(user)) {
-        final Organization org = accountManager.getOrganization(request.organizationId());
-        if (org != null) {
-          accountManager.deleteOrganization(user, org);
-          future.complete(new DeleteOrganizationResponse(org.id(), true));
+    return Mono.create(future -> {
+      try {
+        final User user = tokenVerifier.verify(request.token());
+        if (user != null && isKnownUser(user)) {
+          final Organization org = accountManager.getOrganization(request.organizationId());
+          if (org != null) {
+            accountManager.deleteOrganization(user, org);
+            future.success(new DeleteOrganizationResponse(org.id(), true));
+          } else {
+            future.error(new NoSuchOrganizationFound(request.organizationId()));
+          }
         } else {
-          future.completeExceptionally(new NoSuchOrganizationFound(request.organizationId()));
+          future.error(new InvalidAuthenticationToken());
         }
-      } else {
-        future.completeExceptionally(new InvalidAuthenticationToken());
+      } catch (Exception ex) {
+        future.error(ex);
       }
-    } catch (Exception ex) {
-      future.completeExceptionally(ex);
-    }
-    return future;
+    });
   }
 
   @Override
-  public CompletableFuture<UpdateOrganizationResponse> updateOrganization(UpdateOrganizationRequest request) {
+  public Mono<UpdateOrganizationResponse> updateOrganization(UpdateOrganizationRequest request) {
     checkNotNull(request);
     checkNotNull(request.organizationId());
     checkNotNull(request.token());
 
-    CompletableFuture<UpdateOrganizationResponse> future = new CompletableFuture<>();
-    try {
-      final User owner = tokenVerifier.verify(request.token());
-      if (owner != null && isKnownUser(owner)) {
-        final Organization org = accountManager.getOrganization(request.organizationId());
-        if (org != null) {
+    return Mono.create(future -> {
+      try {
+        final User owner = tokenVerifier.verify(request.token());
+        if (owner != null && isKnownUser(owner)) {
+          final Organization org = accountManager.getOrganization(request.organizationId());
+          if (org != null) {
 
-          Organization newDetails = Organization.builder()
-              .name(request.name())
-              .email(request.email())
-              .copy(org);
+            Organization newDetails = Organization.builder()
+                .name(request.name())
+                .email(request.email())
+                .copy(org);
 
-          accountManager.updateOrganizationDetails(owner, org, newDetails);
-          future.complete(new UpdateOrganizationResponse(newDetails.id(), newDetails.name(), newDetails.apiKeys(),
-              newDetails.email(), newDetails.ownerId()));
+            accountManager.updateOrganizationDetails(owner, org, newDetails);
+            future.success(new UpdateOrganizationResponse(newDetails.id(), newDetails.name(), newDetails.apiKeys(),
+                newDetails.email(), newDetails.ownerId()));
+          } else {
+            future.error(new NoSuchOrganizationFound(request.organizationId()));
+          }
         } else {
-          future.completeExceptionally(new NoSuchOrganizationFound(request.organizationId()));
+          future.error(new InvalidAuthenticationToken());
         }
-      } else {
-        future.completeExceptionally(new InvalidAuthenticationToken());
+      } catch (Exception ex) {
+        future.error(ex);
       }
-    } catch (Exception ex) {
-      future.completeExceptionally(ex);
-    }
-    return future;
+    });
   }
 
   @Override
-  public CompletableFuture<GetMembershipResponse> getUserOrganizationsMembership(GetMembershipRequest request) {
+  public Mono<GetMembershipResponse> getUserOrganizationsMembership(GetMembershipRequest request) {
     checkNotNull(request);
     checkNotNull(request.token());
 
-    CompletableFuture<GetMembershipResponse> future = new CompletableFuture<>();
+    return Mono.create(future -> {
 
-    Collection<Organization> results = new ArrayList<>();
-    try {
-      User user = tokenVerifier.verify(request.token());
-      if (user != null && isKnownUser(user)) {
-        results = accountManager.getUserMembership(user);
+      Collection<Organization> results = new ArrayList<>();
+      try {
+        User user = tokenVerifier.verify(request.token());
+        if (user != null && isKnownUser(user)) {
+          results = accountManager.getUserMembership(user);
 
-        final List<OrganizationInfo> infos = new ArrayList<>();
-        results.forEach(item -> {
-          infos.add(new OrganizationInfo(item.id(), item.name(), item.apiKeys(), item.email(), item.ownerId()));
-        });
+          final List<OrganizationInfo> infos = new ArrayList<>();
+          results.forEach(item -> {
+            infos.add(new OrganizationInfo(item.id(), item.name(), item.apiKeys(), item.email(), item.ownerId()));
+          });
 
-        future.complete(new GetMembershipResponse(infos.toArray(new OrganizationInfo[results.size()])));
-      } else {
-        future.completeExceptionally(new InvalidAuthenticationToken());
+          future.success(new GetMembershipResponse(infos.toArray(new OrganizationInfo[results.size()])));
+        } else {
+          future.error(new InvalidAuthenticationToken());
+        }
+      } catch (Exception ex) {
+        future.error(ex);
       }
-    } catch (Exception ex) {
-      future.completeExceptionally(ex);
-    }
 
-    return future;
+    });
+
   }
 
   @Override
-  public CompletableFuture<GetOrganizationResponse> getOrganization(GetOrganizationRequest request) {
+  public Mono<GetOrganizationResponse> getOrganization(GetOrganizationRequest request) {
     checkNotNull(request);
     checkNotNull(request.organizationId());
     checkNotNull(request.token());
 
-    CompletableFuture<GetOrganizationResponse> future = new CompletableFuture<>();
+    return Mono.create(future -> {
 
-    Organization result = null;
-    try {
-      User user = tokenVerifier.verify(request.token());
-      if (user != null && isKnownUser(user)) {
-        result = accountManager.getOrganization(request.organizationId());
-        if (result != null) {
-          future.complete(
-              new GetOrganizationResponse(result.id(), result.name(), result.apiKeys(), result.email(),
-                  result.ownerId()));
+      Organization result = null;
+      try {
+        User user = tokenVerifier.verify(request.token());
+        if (user != null && isKnownUser(user)) {
+          result = accountManager.getOrganization(request.organizationId());
+          if (result != null) {
+            future.success(
+                new GetOrganizationResponse(result.id(), result.name(), result.apiKeys(), result.email(),
+                    result.ownerId()));
+          } else {
+            future.error(new MissingOrganizationException(request.organizationId()));
+          }
         } else {
-          future.completeExceptionally(new MissingOrganizationException(request.organizationId()));
+          future.error(new InvalidAuthenticationToken());
         }
-      } else {
-        future.completeExceptionally(new InvalidAuthenticationToken());
+      } catch (Exception ex) {
+        future.error(ex);
       }
-    } catch (Exception ex) {
-      future.completeExceptionally(ex);
-    }
 
-    return future;
+    });
 
   }
 
@@ -371,114 +373,117 @@ public class RedisAccountService implements AccountService {
   ////////////////////////////
 
   @Override
-  public CompletableFuture<GetOrganizationMembersResponse> getOrganizationMembers(
+  public Mono<GetOrganizationMembersResponse> getOrganizationMembers(
       GetOrganizationMembersRequest request) {
     checkNotNull(request);
     checkNotNull(request.organizationId());
     checkNotNull(request.token());
 
-    CompletableFuture<GetOrganizationMembersResponse> future = new CompletableFuture<>();
+    return Mono.create(future -> {
 
-    Collection<OrganizationMember> result = null;
-    try {
-      User user = tokenVerifier.verify(request.token());
-      if (user != null && isKnownUser(user)) {
-        result = accountManager.getOrganizationMembers(request.organizationId());
-        future.complete(
-            new GetOrganizationMembersResponse(
-                (OrganizationMember[]) result.toArray(new OrganizationMember[result.size()])));
-      } else {
-        future.completeExceptionally(new InvalidAuthenticationToken());
-      }
-    } catch (Exception ex) {
-      future.completeExceptionally(ex);
-    }
-
-    return future;
-  }
-
-  @Override
-  public CompletableFuture<InviteOrganizationMemberResponse> inviteMember(InviteOrganizationMemberRequest request) {
-    CompletableFuture<InviteOrganizationMemberResponse> future = new CompletableFuture<>();
-
-    try {
-      User owner = tokenVerifier.verify(request.token());
-      if (owner != null && isKnownUser(owner)) {
-        Organization organization = accountManager.getOrganization(request.organizationId());
-        User user = accountManager.getUser(request.userId());
-        if (organization != null && user != null) {
-          accountManager.invite(owner, organization, user);
-          future.complete(new InviteOrganizationMemberResponse());
+      Collection<OrganizationMember> result = null;
+      try {
+        User user = tokenVerifier.verify(request.token());
+        if (user != null && isKnownUser(user)) {
+          result = accountManager.getOrganizationMembers(request.organizationId());
+          future.success(
+              new GetOrganizationMembersResponse(
+                  (OrganizationMember[]) result.toArray(new OrganizationMember[result.size()])));
         } else {
-          future.completeExceptionally(new InvalidRequestException(
-              "Cannot complete request, target-organization or target-user was not found."));
+          future.error(new InvalidAuthenticationToken());
         }
-      } else {
-        future.completeExceptionally(new InvalidAuthenticationToken());
+      } catch (Exception ex) {
+        future.error(ex);
       }
-    } catch (Exception ex) {
-      future.completeExceptionally(ex);
-    }
 
-    return future;
+    });
+
   }
 
   @Override
-  public CompletableFuture<KickoutOrganizationMemberResponse> kickoutMember(KickoutOrganizationMemberRequest request) {
+  public Mono<InviteOrganizationMemberResponse> inviteMember(InviteOrganizationMemberRequest request) {
+    return Mono.create(future -> {
+
+      try {
+        User owner = tokenVerifier.verify(request.token());
+        if (owner != null && isKnownUser(owner)) {
+          Organization organization = accountManager.getOrganization(request.organizationId());
+          User user = accountManager.getUser(request.userId());
+          if (organization != null && user != null) {
+            accountManager.invite(owner, organization, user);
+            future.success(new InviteOrganizationMemberResponse());
+          } else {
+            future.error(new InvalidRequestException(
+                "Cannot success request, target-organization or target-user was not found."));
+          }
+        } else {
+          future.error(new InvalidAuthenticationToken());
+        }
+      } catch (Exception ex) {
+        future.error(ex);
+      }
+
+    });
+
+  }
+
+  @Override
+  public Mono<KickoutOrganizationMemberResponse> kickoutMember(KickoutOrganizationMemberRequest request) {
     checkNotNull(request);
     checkNotNull(request.organizationId());
     checkNotNull(request.token());
     checkNotNull(request.userId());
-    CompletableFuture<KickoutOrganizationMemberResponse> future = new CompletableFuture<>();
+    return Mono.create(future -> {
 
-    try {
-      User owner = tokenVerifier.verify(request.token());
-      if (owner != null && isKnownUser(owner)) {
-        Organization organization = accountManager.getOrganization(request.organizationId());
-        User user = accountManager.getUser(request.userId());
-        if (organization != null && user != null) {
-          accountManager.kickout(owner, organization, user);
-          future.complete(new KickoutOrganizationMemberResponse());
+      try {
+        User owner = tokenVerifier.verify(request.token());
+        if (owner != null && isKnownUser(owner)) {
+          Organization organization = accountManager.getOrganization(request.organizationId());
+          User user = accountManager.getUser(request.userId());
+          if (organization != null && user != null) {
+            accountManager.kickout(owner, organization, user);
+            future.success(new KickoutOrganizationMemberResponse());
+          } else {
+            future.error(new InvalidRequestException(
+                "Cannot success request, target-organization or target-user was not found."));
+          }
         } else {
-          future.completeExceptionally(new InvalidRequestException(
-              "Cannot complete request, target-organization or target-user was not found."));
+          future.error(new InvalidAuthenticationToken());
         }
-      } else {
-        future.completeExceptionally(new InvalidAuthenticationToken());
+      } catch (Exception ex) {
+        future.error(ex);
       }
-    } catch (Exception ex) {
-      future.completeExceptionally(ex);
-    }
 
-    return future;
+    });
+
   }
 
   @Override
-  public CompletableFuture<LeaveOrganizationResponse> leaveOrganization(LeaveOrganizationRequest request) {
+  public Mono<LeaveOrganizationResponse> leaveOrganization(LeaveOrganizationRequest request) {
     checkNotNull(request);
     checkNotNull(request.organizationId());
     checkNotNull(request.token());
 
-    CompletableFuture<LeaveOrganizationResponse> future = new CompletableFuture<>();
+    return Mono.create(future -> {
 
-    try {
-      User user = tokenVerifier.verify(request.token());
-      if (user != null && isKnownUser(user)) {
-        Organization organization = accountManager.getOrganization(request.organizationId());
-        if (organization != null) {
-          accountManager.leave(organization, user);
-          future.complete(new LeaveOrganizationResponse());
+      try {
+        User user = tokenVerifier.verify(request.token());
+        if (user != null && isKnownUser(user)) {
+          Organization organization = accountManager.getOrganization(request.organizationId());
+          if (organization != null) {
+            accountManager.leave(organization, user);
+            future.success(new LeaveOrganizationResponse());
+          } else {
+            future.error(new InvalidRequestException(
+                "Cannot success request, target-organization was not found."));
+          }
         } else {
-          future.completeExceptionally(new InvalidRequestException(
-              "Cannot complete request, target-organization was not found."));
+          future.error(new InvalidAuthenticationToken());
         }
-      } else {
-        future.completeExceptionally(new InvalidAuthenticationToken());
+      } catch (Exception ex) {
+        future.error(ex);
       }
-    } catch (Exception ex) {
-      future.completeExceptionally(ex);
-    }
 
-    return future;
+    });
   }
 }

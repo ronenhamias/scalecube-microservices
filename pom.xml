@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
@@ -63,11 +64,11 @@
 		<project.docker.repository>scalecube/configuration</project.docker.repository>
 		<argLine>-Xms1024m -Xmx2048m</argLine>
 
-		<scalecube-services.version>2.0.26</scalecube-services.version>
+		<scalecube-services.version>2.1.1</scalecube-services.version>
 		<reactor-core.version>3.1.6.RELEASE</reactor-core.version>
 		<redisson.version>3.4.3</redisson.version>
 		<jackson-databind.version>2.7.6</jackson-databind.version>
-		<scalecube-testlib.version>1.0.4</scalecube-testlib.version>
+		<scalecube-testlib.version>1.0.9</scalecube-testlib.version>
 	</properties>
 
 	<modules>
@@ -87,11 +88,13 @@
 
 
 	<dependencies>
+		<!-- https://mvnrepository.com/artifact/io.scalecube/scalecube-services -->
 		<dependency>
 			<groupId>io.scalecube</groupId>
 			<artifactId>scalecube-services</artifactId>
-			<version>${scalecube-services.version}</version>
+			<version>2.1.1</version>
 		</dependency>
+
 		<dependency>
 			<groupId>io.projectreactor</groupId>
 			<artifactId>reactor-core</artifactId>

@@ -19,9 +19,9 @@ public class Main {
     final Microservices seed;
 
     if (info.seedAddress() != null) {
-      seed = Microservices.builder().seeds(info.seedAddress()).build();
+      seed = Microservices.builder().seeds(info.seedAddress()).startAwait();
     } else {
-      seed = Microservices.builder().build();
+      seed = Microservices.builder().startAwait();
     }
     
     start(info.gatewayPort(), seed);
@@ -45,7 +45,7 @@ public class Main {
    * @param seed node to join the cluster with.
    */
   public static void start(int port, Microservices seed) {
-    AccountService accountService = seed.call().api(AccountService.class);
+    AccountService accountService = seed.call().create().api(AccountService.class);
 
     ApiGateway.builder().port(port)
         .instance(accountService).api(AccountService.class)

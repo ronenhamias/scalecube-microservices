@@ -47,13 +47,13 @@ import com.google.common.collect.Lists;
 
 import org.redisson.api.RedissonClient;
 
+import reactor.core.publisher.Mono;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import reactor.core.publisher.Mono;
 
 public class RedisAccountService implements AccountService {
 
@@ -104,6 +104,7 @@ public class RedisAccountService implements AccountService {
 
   @Override
   public Mono<User> register(final Token token) {
+
     Mono<User> result;
     try {
       User user = tokenVerifier.verify(token);
@@ -112,11 +113,14 @@ public class RedisAccountService implements AccountService {
           accountManager.register(user);
           result = Mono.just(user);
         } else {
+
           result = Mono.error(new EmailNotVerifiedException("please verify your email first"));
         }
+
       } else {
         result = Mono.error(new InvalidAuthenticationToken());
       }
+
     } catch (Exception ex) {
       result = Mono.error(ex);
     }
@@ -140,12 +144,12 @@ public class RedisAccountService implements AccountService {
   @Override
   public Mono<CreateOrganizationResponse> createOrganization(CreateOrganizationRequest request) {
     checkNotNull(request);
+
     Mono<CreateOrganizationResponse> result;
     try {
       final User user = tokenVerifier.verify(request.token());
       if (user != null && isKnownUser(user)) {
         final String secretKey = IdGenerator.generateId();
-
         final Organization newOrg = accountManager.createOrganization(user, Organization.builder()
             .id(IdGenerator.generateId())
             .name(request.name())
@@ -154,15 +158,18 @@ public class RedisAccountService implements AccountService {
             .secretKey(secretKey)
             .build());
 
+
         result = Mono.just(new CreateOrganizationResponse(newOrg.id(),
             newOrg.name(),
             newOrg.apiKeys(),
             newOrg.email(),
             newOrg.ownerId()));
 
+
       } else {
         result = Mono.error(new InvalidAuthenticationToken());
       }
+
     } catch (Exception ex) {
       result = Mono.error(ex);
     }
@@ -199,12 +206,15 @@ public class RedisAccountService implements AccountService {
 
         accountManager.updateOrganizationDetails(user, org, newOrg);
 
+
         result = Mono.just(new GetOrganizationResponse(newOrg.id(), newOrg.name(), newOrg.apiKeys(), newOrg.email(),
             newOrg.ownerId()));
+
 
       } else {
         result = Mono.error(new InvalidAuthenticationToken());
       }
+
     } catch (Throwable ex) {
       ex.printStackTrace();
       result = Mono.error(ex);
@@ -218,6 +228,7 @@ public class RedisAccountService implements AccountService {
     checkNotNull(request.organizationId());
     checkNotNull(request.token());
     checkNotNull(request.apiKeyName());
+
 
     Mono<GetOrganizationResponse> result;
     try {
@@ -235,12 +246,15 @@ public class RedisAccountService implements AccountService {
 
         accountManager.updateOrganizationDetails(user, org, newOrg);
 
+
         result = Mono.just(new GetOrganizationResponse(newOrg.id(), newOrg.name(), newOrg.apiKeys(), newOrg.email(),
             newOrg.ownerId()));
+
 
       } else {
         result = Mono.error(new InvalidAuthenticationToken());
       }
+
     } catch (Exception ex) {
       result = Mono.error(ex);
     }
@@ -253,6 +267,7 @@ public class RedisAccountService implements AccountService {
     checkNotNull(request.organizationId());
     checkNotNull(request.token());
 
+
     Mono<DeleteOrganizationResponse> result;
     try {
       final User user = tokenVerifier.verify(request.token());
@@ -262,11 +277,13 @@ public class RedisAccountService implements AccountService {
           accountManager.deleteOrganization(user, org);
           result = Mono.just(new DeleteOrganizationResponse(org.id(), true));
         } else {
+
           result = Mono.error(new NoSuchOrganizationFound(request.organizationId()));
         }
       } else {
         result = Mono.error(new InvalidAuthenticationToken());
       }
+
     } catch (Exception ex) {
       result = Mono.error(ex);
     }
@@ -388,7 +405,8 @@ public class RedisAccountService implements AccountService {
         organizationMembers = accountManager.getOrganizationMembers(request.organizationId());
         result = Mono.just(
             new GetOrganizationMembersResponse(
-                (OrganizationMember[]) organizationMembers.toArray(new OrganizationMember[organizationMembers.size()])));
+                (OrganizationMember[]) organizationMembers
+                    .toArray(new OrganizationMember[organizationMembers.size()])));
       } else {
         result = Mono.error(new InvalidAuthenticationToken());
       }

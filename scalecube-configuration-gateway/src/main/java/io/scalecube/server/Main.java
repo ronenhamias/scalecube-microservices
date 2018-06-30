@@ -18,9 +18,9 @@ public class Main {
     final Microservices seed;
 
     if (info.seedAddress() != null) {
-      seed = Microservices.builder().seeds(info.seedAddress()).build();
+      seed = Microservices.builder().seeds(info.seedAddress()).startAwait();
     } else {
-      seed = Microservices.builder().build();
+      seed = Microservices.builder().startAwait();
     }
 
     start(info.gatewayPort(), seed);
@@ -44,7 +44,7 @@ public class Main {
    * @param seed as access point to the cluster.
    */
   public static void start(int port, Microservices seed) {
-    ConfigurationService service = seed.call().api(ConfigurationService.class);
+    ConfigurationService service = seed.call().create().api(ConfigurationService.class);
     ApiGateway.builder().port(port)
         .instance(service).api(ConfigurationService.class)
         .crossOriginResourceSharing()

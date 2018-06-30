@@ -32,11 +32,11 @@ public class Main {
 
     if (packageInfo.seedAddress() == null) {
       Cli.prln("Seed Host and port not specified - running as standalone seed.");
-      seed = Microservices.builder().servicePort(Microservices.SERVICE_PORT).clusterConfig(conf).build();
+      seed = Microservices.builder().clusterConfig(conf).startAwait();
     } else {
       Cli.prln("Seed Host and port specified - trying to join cluster: " + Arrays.toString(packageInfo.seedAddress()));
-      seed = Microservices.builder().servicePort(Microservices.SERVICE_PORT).clusterConfig(conf)
-          .seeds(packageInfo.seedAddress()).build();
+      seed = Microservices.builder().clusterConfig(conf)
+          .seeds(packageInfo.seedAddress()).startAwait();
     }
 
     Logo.builder().tagVersion(packageInfo.version())

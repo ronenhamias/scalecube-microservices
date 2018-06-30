@@ -9,6 +9,7 @@ import reactor.core.publisher.Mono;
 public interface AccountService {
 
   @ServiceMethod
+
   Mono<User> register(final Token token);
 
   @ServiceMethod
@@ -27,8 +28,7 @@ public interface AccountService {
   Mono<UpdateOrganizationResponse> updateOrganization(UpdateOrganizationRequest request);
 
   @ServiceMethod
-  Mono<GetOrganizationMembersResponse> getOrganizationMembers(
-      GetOrganizationMembersRequest request);
+  Mono<GetOrganizationMembersResponse> getOrganizationMembers(GetOrganizationMembersRequest request);
 
   @ServiceMethod
   Mono<InviteOrganizationMemberResponse> inviteMember(InviteOrganizationMemberRequest request);

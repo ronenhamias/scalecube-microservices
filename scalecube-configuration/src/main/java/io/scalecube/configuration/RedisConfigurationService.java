@@ -18,11 +18,16 @@ import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Map;
+import reactor.core.publisher.Mono;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import javax.annotation.PostConstruct;
 
 import reactor.core.publisher.Mono;
+
+import java.util.stream.Collectors;
 
 public class RedisConfigurationService implements ConfigurationService {
 
@@ -31,14 +36,13 @@ public class RedisConfigurationService implements ConfigurationService {
 
   @Inject
   private Microservices microservices;
-
   private AccountService accountService;
 
   private final RedisStore<Document> store;
 
   @PostConstruct
   void init() {
-    accountService = microservices.call().api(AccountService.class);
+    accountService = microservices.call().create().api(AccountService.class);
   }
 
   public static class Builder {
@@ -51,7 +55,7 @@ public class RedisConfigurationService implements ConfigurationService {
       return this;
     }
 
-    Builder mock(AccountService accountService) {
+    public Builder mock(AccountService accountService) {
       this.accountService = accountService;
       return this;
     }
@@ -85,8 +89,7 @@ public class RedisConfigurationService implements ConfigurationService {
     LOGGER.debug("received fetch request {}", request);
     return accountService.register(request.token()).map(user -> {
       final Document result = store.get(getCollectionName(request), request.key());
-      return result != null ? new FetchResponse(result.key(), result.value()) : FetchResponse.builder().build();
-    });
+      return result != null ? new FetchResponse(result.key(), result.value()) : FetchResponse.builder().build();    });
   }
 
   private String getCollectionName(final AccessRequest request) {
@@ -137,6 +140,7 @@ public class RedisConfigurationService implements ConfigurationService {
                 new InvalidPermissionsException("invalid permissions-level delete request requires write access"));
           }
         });
+
   }
 
   private Permissions getPermissions(Map<String, String> claims) {

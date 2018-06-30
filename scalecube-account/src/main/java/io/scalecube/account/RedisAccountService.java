@@ -32,6 +32,7 @@ import io.scalecube.account.api.NoSuchOrganizationFound;
 import io.scalecube.account.api.Organization;
 import io.scalecube.account.api.OrganizationInfo;
 import io.scalecube.account.api.OrganizationMember;
+import io.scalecube.account.api.OrganizationService;
 import io.scalecube.account.api.Token;
 import io.scalecube.account.api.UpdateOrganizationRequest;
 import io.scalecube.account.api.UpdateOrganizationResponse;
@@ -55,7 +56,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class RedisAccountService implements AccountService {
+public class RedisAccountService implements AccountService, OrganizationService {
 
   private final RedisOrganizations accountManager;
 

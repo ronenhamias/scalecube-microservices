@@ -105,26 +105,26 @@ public class RedisAccountService implements AccountService {
   @Override
   public Mono<User> register(final Token token) {
 
-    Mono<User> result;
-    try {
-      User user = tokenVerifier.verify(token);
-      if (user != null) {
-        if (user.emailVerified()) {
-          accountManager.register(user);
-          result = Mono.just(user);
-        } else {
+    return Mono.create(result -> {
+      try {
+        User user = tokenVerifier.verify(token);
+        if (user != null) {
+          if (user.emailVerified()) {
+            accountManager.register(user);
+            result.success(user);
+          } else {
 
-          result = Mono.error(new EmailNotVerifiedException("please verify your email first"));
+            result.error(new EmailNotVerifiedException("please verify your email first"));
+          }
+
+        } else {
+          result.error(new InvalidAuthenticationToken());
         }
 
-      } else {
-        result = Mono.error(new InvalidAuthenticationToken());
+      } catch (Exception ex) {
+        result.error(ex);
       }
-
-    } catch (Exception ex) {
-      result = Mono.error(ex);
-    }
-    return result;
+    });
   }
 
   @Override
@@ -132,48 +132,45 @@ public class RedisAccountService implements AccountService {
     checkNotNull(request);
     checkNotNull(request.fullNameOrEmail());
 
-    Mono<FindUserResponse> result;
-    if (request.fullNameOrEmail().length() >= 3) {
-      result = Mono.just(new FindUserResponse(accountManager.searchUserByUserNameOrEmail(request.fullNameOrEmail())));
-    } else {
-      result = Mono.just(new FindUserResponse());
-    }
-    return result;
+    return Mono.create(result -> {
+      if (request.fullNameOrEmail().length() >= 3) {
+        result.success(new FindUserResponse(accountManager.searchUserByUserNameOrEmail(request.fullNameOrEmail())));
+      } else {
+        result.success(new FindUserResponse());
+      }
+    });
   }
 
   @Override
   public Mono<CreateOrganizationResponse> createOrganization(CreateOrganizationRequest request) {
     checkNotNull(request);
 
-    Mono<CreateOrganizationResponse> result;
-    try {
-      final User user = tokenVerifier.verify(request.token());
-      if (user != null && isKnownUser(user)) {
-        final String secretKey = IdGenerator.generateId();
-        final Organization newOrg = accountManager.createOrganization(user, Organization.builder()
-            .id(IdGenerator.generateId())
-            .name(request.name())
-            .ownerId(user.id())
-            .email(request.email())
-            .secretKey(secretKey)
-            .build());
+    return Mono.create(result -> {
+      try {
+        final User user = tokenVerifier.verify(request.token());
+        if (user != null && isKnownUser(user)) {
+          final String secretKey = IdGenerator.generateId();
+          final Organization newOrg = accountManager.createOrganization(user, Organization.builder()
+              .id(IdGenerator.generateId())
+              .name(request.name())
+              .ownerId(user.id())
+              .email(request.email())
+              .secretKey(secretKey)
+              .build());
 
+          result.success(new CreateOrganizationResponse(newOrg.id(),
+              newOrg.name(),
+              newOrg.apiKeys(),
+              newOrg.email(),
+              newOrg.ownerId()));
 
-        result = Mono.just(new CreateOrganizationResponse(newOrg.id(),
-            newOrg.name(),
-            newOrg.apiKeys(),
-            newOrg.email(),
-            newOrg.ownerId()));
-
-
-      } else {
-        result = Mono.error(new InvalidAuthenticationToken());
+        } else {
+          result.error(new InvalidAuthenticationToken());
+        }
+      } catch (Exception ex) {
+        result.error(ex);
       }
-
-    } catch (Exception ex) {
-      result = Mono.error(ex);
-    }
-    return result;
+    });
   }
 
   private boolean isKnownUser(User user) {
@@ -182,44 +179,39 @@ public class RedisAccountService implements AccountService {
 
   @Override
   public Mono<GetOrganizationResponse> addOrganizationApiKey(AddOrganizationApiKeyRequest request) {
-    Mono<GetOrganizationResponse> result;
-    try {
-      checkNotNull(request);
-      checkNotNull(request.organizationId(), "organizationId is a required argument");
-      checkNotNull(request.token(), "token is a required argument");
-      checkNotNull(request.apiKeyName(), "apiKeyName is a required argument");
+    return Mono.create(result -> {
+      try {
+        checkNotNull(request);
+        checkNotNull(request.organizationId(), "organizationId is a required argument");
+        checkNotNull(request.token(), "token is a required argument");
+        checkNotNull(request.apiKeyName(), "apiKeyName is a required argument");
 
-      final User user = tokenVerifier.verify(request.token());
-      if (user != null && isKnownUser(user)) {
-        final Organization org = accountManager.getOrganization(request.organizationId());
+        final User user = tokenVerifier.verify(request.token());
+        if (user != null && isKnownUser(user)) {
+          final Organization org = accountManager.getOrganization(request.organizationId());
 
-        ApiKey apiKey = JwtApiKey.builder().origin("account-service")
-            .subject(org.id())
-            .name(request.apiKeyName())
-            .claims(request.claims())
-            .id(org.id())
-            .build(org.secretKey());
+          ApiKey apiKey = JwtApiKey.builder().origin("account-service")
+              .subject(org.id())
+              .name(request.apiKeyName())
+              .claims(request.claims())
+              .id(org.id())
+              .build(org.secretKey());
 
-        JwtApiKey[] apiKeys = Lists.asList(apiKey, org.apiKeys()).toArray(new JwtApiKey[org.apiKeys().length + 1]);
+          JwtApiKey[] apiKeys = Lists.asList(apiKey, org.apiKeys()).toArray(new JwtApiKey[org.apiKeys().length + 1]);
 
-        Organization newOrg = org.builder().apiKey(apiKeys).copy(org);
+          Organization newOrg = org.builder().apiKey(apiKeys).copy(org);
+          accountManager.updateOrganizationDetails(user, org, newOrg);
+          result.success(new GetOrganizationResponse(newOrg.id(), newOrg.name(), newOrg.apiKeys(), newOrg.email(),
+              newOrg.ownerId()));
+        } else {
+          result.error(new InvalidAuthenticationToken());
+        }
 
-        accountManager.updateOrganizationDetails(user, org, newOrg);
-
-
-        result = Mono.just(new GetOrganizationResponse(newOrg.id(), newOrg.name(), newOrg.apiKeys(), newOrg.email(),
-            newOrg.ownerId()));
-
-
-      } else {
-        result = Mono.error(new InvalidAuthenticationToken());
+      } catch (Throwable ex) {
+        ex.printStackTrace();
+        result.error(ex);
       }
-
-    } catch (Throwable ex) {
-      ex.printStackTrace();
-      result = Mono.error(ex);
-    }
-    return result;
+    });
   }
 
   @Override
@@ -229,36 +221,26 @@ public class RedisAccountService implements AccountService {
     checkNotNull(request.token());
     checkNotNull(request.apiKeyName());
 
-
-    Mono<GetOrganizationResponse> result;
-    try {
-      final User user = tokenVerifier.verify(request.token());
-      if (user != null && isKnownUser(user)) {
-        final Organization org = accountManager.getOrganization(request.organizationId());
-
-        List<ApiKey> apiKeys = Arrays.asList(org.apiKeys());
-
-        List<ApiKey> reduced = apiKeys.stream()
-            .filter(api -> !api.name().equals(request.apiKeyName()))
-            .collect(Collectors.toList());
-
-        Organization newOrg = org.builder().apiKey(reduced.toArray(new ApiKey[reduced.size()])).copy(org);
-
-        accountManager.updateOrganizationDetails(user, org, newOrg);
-
-
-        result = Mono.just(new GetOrganizationResponse(newOrg.id(), newOrg.name(), newOrg.apiKeys(), newOrg.email(),
-            newOrg.ownerId()));
-
-
-      } else {
-        result = Mono.error(new InvalidAuthenticationToken());
+    return Mono.create(result -> {
+      try {
+        final User user = tokenVerifier.verify(request.token());
+        if (user != null && isKnownUser(user)) {
+          final Organization org = accountManager.getOrganization(request.organizationId());
+          List<ApiKey> apiKeys = Arrays.asList(org.apiKeys());
+          List<ApiKey> reduced = apiKeys.stream()
+              .filter(api -> !api.name().equals(request.apiKeyName()))
+              .collect(Collectors.toList());
+          Organization newOrg = org.builder().apiKey(reduced.toArray(new ApiKey[reduced.size()])).copy(org);
+          accountManager.updateOrganizationDetails(user, org, newOrg);
+          result.success(new GetOrganizationResponse(newOrg.id(), newOrg.name(), newOrg.apiKeys(), newOrg.email(),
+              newOrg.ownerId()));
+        } else {
+          result.error(new InvalidAuthenticationToken());
+        }
+      } catch (Exception ex) {
+        result.error(ex);
       }
-
-    } catch (Exception ex) {
-      result = Mono.error(ex);
-    }
-    return result;
+    });
   }
 
   @Override
@@ -267,27 +249,25 @@ public class RedisAccountService implements AccountService {
     checkNotNull(request.organizationId());
     checkNotNull(request.token());
 
-
-    Mono<DeleteOrganizationResponse> result;
-    try {
-      final User user = tokenVerifier.verify(request.token());
-      if (user != null && isKnownUser(user)) {
-        final Organization org = accountManager.getOrganization(request.organizationId());
-        if (org != null) {
-          accountManager.deleteOrganization(user, org);
-          result = Mono.just(new DeleteOrganizationResponse(org.id(), true));
+    return Mono.create(result -> {
+      try {
+        final User user = tokenVerifier.verify(request.token());
+        if (user != null && isKnownUser(user)) {
+          final Organization org = accountManager.getOrganization(request.organizationId());
+          if (org != null) {
+            accountManager.deleteOrganization(user, org);
+            result.success(new DeleteOrganizationResponse(org.id(), true));
+          } else {
+            result.error(new NoSuchOrganizationFound(request.organizationId()));
+          }
         } else {
-
-          result = Mono.error(new NoSuchOrganizationFound(request.organizationId()));
+          result.error(new InvalidAuthenticationToken());
         }
-      } else {
-        result = Mono.error(new InvalidAuthenticationToken());
-      }
 
-    } catch (Exception ex) {
-      result = Mono.error(ex);
-    }
-    return result;
+      } catch (Exception ex) {
+        result.error(ex);
+      }
+    });
   }
 
   @Override
@@ -296,31 +276,31 @@ public class RedisAccountService implements AccountService {
     checkNotNull(request.organizationId());
     checkNotNull(request.token());
 
-    Mono<UpdateOrganizationResponse> result;
-    try {
-      final User owner = tokenVerifier.verify(request.token());
-      if (owner != null && isKnownUser(owner)) {
-        final Organization org = accountManager.getOrganization(request.organizationId());
-        if (org != null) {
+    return Mono.create(result -> {
+      try {
+        final User owner = tokenVerifier.verify(request.token());
+        if (owner != null && isKnownUser(owner)) {
+          final Organization org = accountManager.getOrganization(request.organizationId());
+          if (org != null) {
 
-          Organization newDetails = Organization.builder()
-              .name(request.name())
-              .email(request.email())
-              .copy(org);
+            Organization newDetails = Organization.builder()
+                .name(request.name())
+                .email(request.email())
+                .copy(org);
 
-          accountManager.updateOrganizationDetails(owner, org, newDetails);
-          result = Mono.just(new UpdateOrganizationResponse(newDetails.id(), newDetails.name(), newDetails.apiKeys(),
-              newDetails.email(), newDetails.ownerId()));
+            accountManager.updateOrganizationDetails(owner, org, newDetails);
+            result.success(new UpdateOrganizationResponse(newDetails.id(), newDetails.name(), newDetails.apiKeys(),
+                newDetails.email(), newDetails.ownerId()));
+          } else {
+            result.error(new NoSuchOrganizationFound(request.organizationId()));
+          }
         } else {
-          result = Mono.error(new NoSuchOrganizationFound(request.organizationId()));
+          result.error(new InvalidAuthenticationToken());
         }
-      } else {
-        result = Mono.error(new InvalidAuthenticationToken());
+      } catch (Exception ex) {
+        result.error(ex);
       }
-    } catch (Exception ex) {
-      result = Mono.error(ex);
-    }
-    return result;
+    });
   }
 
   @Override
@@ -328,28 +308,24 @@ public class RedisAccountService implements AccountService {
     checkNotNull(request);
     checkNotNull(request.token());
 
-    Mono<GetMembershipResponse> result;
-
-    Collection<Organization> results = new ArrayList<>();
-    try {
-      User user = tokenVerifier.verify(request.token());
-      if (user != null && isKnownUser(user)) {
-        results = accountManager.getUserMembership(user);
-
-        final List<OrganizationInfo> infos = new ArrayList<>();
-        results.forEach(item -> {
-          infos.add(new OrganizationInfo(item.id(), item.name(), item.apiKeys(), item.email(), item.ownerId()));
-        });
-
-        result = Mono.just(new GetMembershipResponse(infos.toArray(new OrganizationInfo[results.size()])));
-      } else {
-        result = Mono.error(new InvalidAuthenticationToken());
+    return Mono.create(result -> {
+      Collection<Organization> results = new ArrayList<>();
+      try {
+        User user = tokenVerifier.verify(request.token());
+        if (user != null && isKnownUser(user)) {
+          results = accountManager.getUserMembership(user);
+          final List<OrganizationInfo> infos = new ArrayList<>();
+          results.forEach(item -> {
+            infos.add(new OrganizationInfo(item.id(), item.name(), item.apiKeys(), item.email(), item.ownerId()));
+          });
+          result.success(new GetMembershipResponse(infos.toArray(new OrganizationInfo[results.size()])));
+        } else {
+          result.error(new InvalidAuthenticationToken());
+        }
+      } catch (Exception ex) {
+        result.error(ex);
       }
-    } catch (Exception ex) {
-      result = Mono.error(ex);
-    }
-
-    return result;
+    });
   }
 
   @Override
@@ -358,30 +334,28 @@ public class RedisAccountService implements AccountService {
     checkNotNull(request.organizationId());
     checkNotNull(request.token());
 
-    Mono<GetOrganizationResponse> result;
-
-    Organization organization = null;
-    try {
-      User user = tokenVerifier.verify(request.token());
-      if (user != null && isKnownUser(user)) {
-        organization = accountManager.getOrganization(request.organizationId());
-        if (organization != null) {
-          result = Mono.just(
-              new GetOrganizationResponse(organization.id(), organization.name(), organization.apiKeys(),
-                  organization.email(),
-                  organization.ownerId()));
+    return Mono.create(result -> {
+      Organization organization = null;
+      try {
+        User user = tokenVerifier.verify(request.token());
+        if (user != null && isKnownUser(user)) {
+          organization = accountManager.getOrganization(request.organizationId());
+          if (organization != null) {
+            result.success(
+                new GetOrganizationResponse(organization.id(), organization.name(), organization.apiKeys(),
+                    organization.email(),
+                    organization.ownerId()));
+          } else {
+            result.error(new MissingOrganizationException(request.organizationId()));
+          }
         } else {
-          result = Mono.error(new MissingOrganizationException(request.organizationId()));
+          result.error(new InvalidAuthenticationToken());
         }
-      } else {
-        result = Mono.error(new InvalidAuthenticationToken());
+      } catch (Exception ex) {
+        result.error(ex);
       }
-    } catch (Exception ex) {
-      result = Mono.error(ex);
-    }
 
-    return result;
-
+    });
   }
 
 
@@ -396,51 +370,47 @@ public class RedisAccountService implements AccountService {
     checkNotNull(request.organizationId());
     checkNotNull(request.token());
 
-    Mono<GetOrganizationMembersResponse> result;
-
-    Collection<OrganizationMember> organizationMembers = null;
-    try {
-      User user = tokenVerifier.verify(request.token());
-      if (user != null && isKnownUser(user)) {
-        organizationMembers = accountManager.getOrganizationMembers(request.organizationId());
-        result = Mono.just(
-            new GetOrganizationMembersResponse(
-                (OrganizationMember[]) organizationMembers
-                    .toArray(new OrganizationMember[organizationMembers.size()])));
-      } else {
-        result = Mono.error(new InvalidAuthenticationToken());
+    return Mono.create(result -> {
+      Collection<OrganizationMember> organizationMembers = null;
+      try {
+        User user = tokenVerifier.verify(request.token());
+        if (user != null && isKnownUser(user)) {
+          organizationMembers = accountManager.getOrganizationMembers(request.organizationId());
+          result.success(
+              new GetOrganizationMembersResponse(
+                  (OrganizationMember[]) organizationMembers
+                      .toArray(new OrganizationMember[organizationMembers.size()])));
+        } else {
+          result.error(new InvalidAuthenticationToken());
+        }
+      } catch (Exception ex) {
+        result.error(ex);
       }
-    } catch (Exception ex) {
-      result = Mono.error(ex);
-    }
-
-    return result;
+    });
   }
 
   @Override
   public Mono<InviteOrganizationMemberResponse> inviteMember(InviteOrganizationMemberRequest request) {
-    Mono<InviteOrganizationMemberResponse> result;
-
-    try {
-      User owner = tokenVerifier.verify(request.token());
-      if (owner != null && isKnownUser(owner)) {
-        Organization organization = accountManager.getOrganization(request.organizationId());
-        User user = accountManager.getUser(request.userId());
-        if (organization != null && user != null) {
-          accountManager.invite(owner, organization, user);
-          result = Mono.just(new InviteOrganizationMemberResponse());
+    return Mono.create(result -> {
+      try {
+        User owner = tokenVerifier.verify(request.token());
+        if (owner != null && isKnownUser(owner)) {
+          Organization organization = accountManager.getOrganization(request.organizationId());
+          User user = accountManager.getUser(request.userId());
+          if (organization != null && user != null) {
+            accountManager.invite(owner, organization, user);
+            result.success(new InviteOrganizationMemberResponse());
+          } else {
+            result.error(new InvalidRequestException(
+                "Cannot complete request, target-organization or target-user was not found."));
+          }
         } else {
-          result = Mono.error(new InvalidRequestException(
-              "Cannot complete request, target-organization or target-user was not found."));
+          result.error(new InvalidAuthenticationToken());
         }
-      } else {
-        result = Mono.error(new InvalidAuthenticationToken());
+      } catch (Exception ex) {
+        result.error(ex);
       }
-    } catch (Exception ex) {
-      result = Mono.error(ex);
-    }
-
-    return result;
+    });
   }
 
   @Override
@@ -449,28 +419,27 @@ public class RedisAccountService implements AccountService {
     checkNotNull(request.organizationId());
     checkNotNull(request.token());
     checkNotNull(request.userId());
-    Mono<KickoutOrganizationMemberResponse> result;
 
-    try {
-      User owner = tokenVerifier.verify(request.token());
-      if (owner != null && isKnownUser(owner)) {
-        Organization organization = accountManager.getOrganization(request.organizationId());
-        User user = accountManager.getUser(request.userId());
-        if (organization != null && user != null) {
-          accountManager.kickout(owner, organization, user);
-          result = Mono.just(new KickoutOrganizationMemberResponse());
+    return Mono.create(result -> {
+      try {
+        User owner = tokenVerifier.verify(request.token());
+        if (owner != null && isKnownUser(owner)) {
+          Organization organization = accountManager.getOrganization(request.organizationId());
+          User user = accountManager.getUser(request.userId());
+          if (organization != null && user != null) {
+            accountManager.kickout(owner, organization, user);
+            result.success(new KickoutOrganizationMemberResponse());
+          } else {
+            result.error(new InvalidRequestException(
+                "Cannot complete request, target-organization or target-user was not found."));
+          }
         } else {
-          result = Mono.error(new InvalidRequestException(
-              "Cannot complete request, target-organization or target-user was not found."));
+          result.error(new InvalidAuthenticationToken());
         }
-      } else {
-        result = Mono.error(new InvalidAuthenticationToken());
+      } catch (Exception ex) {
+        result.error(ex);
       }
-    } catch (Exception ex) {
-      result = Mono.error(ex);
-    }
-
-    return result;
+    });
   }
 
   @Override
@@ -479,26 +448,24 @@ public class RedisAccountService implements AccountService {
     checkNotNull(request.organizationId());
     checkNotNull(request.token());
 
-    Mono<LeaveOrganizationResponse> result;
-
-    try {
-      User user = tokenVerifier.verify(request.token());
-      if (user != null && isKnownUser(user)) {
-        Organization organization = accountManager.getOrganization(request.organizationId());
-        if (organization != null) {
-          accountManager.leave(organization, user);
-          result = Mono.just(new LeaveOrganizationResponse());
+    return Mono.create(result -> {
+      try {
+        User user = tokenVerifier.verify(request.token());
+        if (user != null && isKnownUser(user)) {
+          Organization organization = accountManager.getOrganization(request.organizationId());
+          if (organization != null) {
+            accountManager.leave(organization, user);
+            result.success(new LeaveOrganizationResponse());
+          } else {
+            result.error(new InvalidRequestException(
+                "Cannot complete request, target-organization was not found."));
+          }
         } else {
-          result = Mono.error(new InvalidRequestException(
-              "Cannot complete request, target-organization was not found."));
+          result.error(new InvalidAuthenticationToken());
         }
-      } else {
-        result = Mono.error(new InvalidAuthenticationToken());
+      } catch (Exception ex) {
+        result.error(ex);
       }
-    } catch (Exception ex) {
-      result = Mono.error(ex);
-    }
-
-    return result;
+    });
   }
 }

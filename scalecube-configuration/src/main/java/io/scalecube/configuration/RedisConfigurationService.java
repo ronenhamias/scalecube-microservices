@@ -20,14 +20,9 @@ import org.slf4j.LoggerFactory;
 
 import reactor.core.publisher.Mono;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.Map;
+
 import javax.annotation.PostConstruct;
-
-import reactor.core.publisher.Mono;
-
-import java.util.stream.Collectors;
 
 public class RedisConfigurationService implements ConfigurationService {
 

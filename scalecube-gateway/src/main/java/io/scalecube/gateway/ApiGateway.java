@@ -10,6 +10,8 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import org.rapidoid.io.IO;
 import org.rapidoid.setup.On;
 
+import reactor.core.publisher.Mono;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -17,8 +19,6 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
-
-import reactor.core.publisher.Mono;
 
 public class ApiGateway {
 
